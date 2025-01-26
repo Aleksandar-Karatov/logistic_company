@@ -1,0 +1,22 @@
+package model
+
+import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
+
+type Office struct {
+	ID        string   `gorm:"primaryKey;type:varchar(255)"`
+	Location  string   `gorm:"column:location;not null;type:varchar(255)"`
+	CompanyID string   `gorm:"column:company_id;not null;type:varchar(255)"`
+	Company   *Company `gorm:"foreignKey:CompanyID"`
+}
+
+func (Office) TableName() string {
+	return "office"
+}
+
+func (o *Office) BeforeCreate(tx *gorm.DB) (err error) {
+	o.ID = uuid.New().String()
+	return nil
+}
