@@ -16,7 +16,7 @@ func (r *Router) GetAllCompanies(c *gin.Context) {
 	}
 	var companies []model.Company
 
-	err = r.repository.CompanyRepository.CompanyRepository.GetAllCompanies(&companies, limit, offset)
+	err = r.repository.CompanyRepository.GetAllCompanies(&companies, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

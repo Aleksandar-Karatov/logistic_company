@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"logistic_company/config"
+	"logistic_company/model"
 	"logistic_company/repository"
 	"net/http"
 	"strings"
@@ -58,7 +59,8 @@ func JWTMiddleware(repos *repository.Repository, secretKey []byte) gin.HandlerFu
 		}
 
 		if claims.Role == config.RoleClient {
-			client, err := repos.ClientRepository.GetClientByEmail(claims.ID)
+			var client model.Client
+			err := repos.ClientRepository.GetClientByID(&client, claims.ID)
 			if err != nil {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 				c.Abort()
@@ -68,7 +70,8 @@ func JWTMiddleware(repos *repository.Repository, secretKey []byte) gin.HandlerFu
 			c.Set(config.Role, config.RoleClient)
 			c.Set("email", client.Email)
 		} else if claims.Role == config.RoleEmployee {
-			employee, err := repos.EmployeeRepository.GetEmployeeByEmail(claims.ID)
+			var employee model.Employee
+			err := repos.EmployeeRepository.GetEmployeeById(&employee, claims.ID)
 			if err != nil {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 				c.Abort()
