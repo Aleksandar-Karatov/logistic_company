@@ -1,19 +1,28 @@
 package model
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Package struct {
-	ID                  string  `gorm:"primaryKey;type:varchar(255)"`
-	SenderID            string  `gorm:"column:client_id;not null;type:varchar(255)"`
-	Sender              *Client `gorm:"foreignKey:SenderID"`
-	ReceiverID          string  `gorm:"column:receiver_id;not null;type:varchar(255)"`
-	Receiver            *Client `gorm:"foreignKey:ReceiverID"`
-	Weight              float64 `gorm:"column:weight;not null;type:float(8)"`
-	Price               float64 `gorm:"column:price;not null;type:float(8)"`
-	IsDeliveredToOffice bool    `gorm:"column:is_delivered_to_office;not null;type:bool"`
+	ID                  string     `gorm:"primaryKey;type:varchar(255)"`
+	SenderID            string     `gorm:"column:client_id;not null;type:varchar(255)"`
+	Sender              *Client    `gorm:"foreignKey:SenderID"`
+	ReceiverID          string     `gorm:"column:receiver_id;not null;type:varchar(255)"`
+	Receiver            *Client    `gorm:"foreignKey:ReceiverID"`
+	Weight              float64    `gorm:"column:weight;not null;type:float(8)"`
+	Price               float64    `gorm:"column:price;not null;type:float(8)"`
+	IsDeliveredToOffice bool       `gorm:"column:is_delivered_to_office;not null;type:bool"`
+	DeliveryStatus      string     `gorm:"column:delivery_status;not null;type:varchar(255)"`
+	DeliveryDate        *time.Time `gorm:"column:delivery_date;type:datetime"`
+	RegisteredBy        string     `gorm:"column:registered_by;type:varchar(255)"`
+
+	Employee   *Employee `gorm:"foreignKey:RegisteredBy"`
+	CourrierID string    `gorm:"column:courrier_id;not null;type:varchar(255)"`
+	Courrier   *Employee `gorm:"foreignKey:CourrierID"`
 
 	OfficeAcceptedAtID string  `gorm:"column:office_accepted_at;not null;type:varchar(255)"`
 	OfficeAcceptedAt   *Office `gorm:"foreignKey:OfficeAcceptedAtID"`

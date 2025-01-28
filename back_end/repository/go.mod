@@ -1,6 +1,6 @@
 module logistic_company/repository
 
-go 1.20
+go 1.23.5
 
 require (
 	gorm.io/driver/mysql v1.5.7

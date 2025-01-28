@@ -7,7 +7,7 @@ import (
 
 type Employee struct {
 	ID       string  `gorm:"primaryKey;type:varchar(255)"`
-	Name     string  `gorm:"column:client_name;not null;unique;type:varchar(255)"`
+	Name     string  `gorm:"column:employee_name;not null;unique;type:varchar(255)"`
 	Email    string  `gorm:"column:email;not null;unique;type:varchar(255)"`
 	Password string  `gorm:"column:password;not null;type:varchar(255)"`
 	Phone    string  `gorm:"column:phone;not null;unique;type:varchar(255)"`

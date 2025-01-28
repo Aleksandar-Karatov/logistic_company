@@ -15,6 +15,7 @@ type Repository struct {
 	OfficeRepository   *OfficeRepository
 	PackageRepository  *PackageRepository
 	ClientRepository   *ClientRepository
+	LoginRepository    *LoginRepository
 }
 
 func NewRepository(cfg config.Config) (*Repository, error) {
@@ -32,6 +33,7 @@ func NewRepository(cfg config.Config) (*Repository, error) {
 		OfficeRepository:   NewOfficeRepository(db),
 		PackageRepository:  NewPackageRepository(db),
 		ClientRepository:   NewClientRepository(db),
+		LoginRepository:    NewLoginRepository(db),
 	}, nil
 }
 
