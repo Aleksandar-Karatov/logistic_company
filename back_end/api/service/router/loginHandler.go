@@ -1,16 +1,27 @@
 package router
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
-	"logistic_company/config"
+	"logistic_company/api/service/auth"
 	"logistic_company/model"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 )
 
+// @Summary Login
+// @Description Logs in a user
+// @Tags login
+// @Accept json
+// @Produce json
+// @Param payload body model.LoginPayload true "Login payload"
+// @Success 200 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Failure 401 {object} gin.H
+// @Router /login [post]
 func (r *Router) Login(c *gin.Context) {
 	var payload model.LoginPayload
 	if err := c.ShouldBindJSON(&payload); err != nil {
@@ -24,23 +35,28 @@ func (r *Router) Login(c *gin.Context) {
 		return
 	}
 
-	role, err := r.repository.LoginRepository.Login(c.Request.Context(), payload.Email, payload.Password)
+	id, role, err := r.repository.LoginRepository.Login(c.Request.Context(), payload.Email, payload.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 		return
 	}
+	claims := auth.CustomClaims{
+		ID:    id,
+		Email: payload.Email,
+		Role:  role,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "logistic_company",
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)), // Token expires in 24 hours
+		},
+	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		config.Email: payload.Email,
-		config.Role:  role,
-		"exp":        time.Now().Add(time.Hour * 24).Unix(), // Token expires in 24 hours
-	})
-
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	fmt.Println("SECRET KEY: ", string(r.secretKey))
 	tokenString, err := token.SignedString(r.secretKey)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+	c.JSON(http.StatusOK, gin.H{"token": "Bearer " + tokenString})
 }

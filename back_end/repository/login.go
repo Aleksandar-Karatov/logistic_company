@@ -3,9 +3,11 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"logistic_company/config"
 	"logistic_company/model"
 
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -19,25 +21,35 @@ func NewLoginRepository(db *gorm.DB) *LoginRepository {
 	}
 }
 
-func (l *LoginRepository) Login(ctx context.Context, email, password string) (string, error) {
+func (l *LoginRepository) Login(ctx context.Context, email, password string) (string, string, error) {
 	var employee *model.Employee
 	if err := l.db.WithContext(ctx).Model(&model.Employee{}).
-		Where("email = ? AND password = ?", email, password).
+		Where("email = ?", email).
 		First(&employee).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return "", err
+		return "", "", err
 	}
+	fmt.Println(employee)
 	if employee != nil {
-		return employee.Role, nil
+		if err := bcrypt.CompareHashAndPassword([]byte(employee.Password), []byte(password)); err != nil {
+			return "", "", errors.New("invalid password")
+		}
+		return employee.ID, employee.Role, nil
 	}
-	var id *string
 
-	if err := l.db.WithContext(ctx).Model(&model.Client{}).Select(config.Id).
-		Where("email = ? AND password = ?", email, password).
-		First(&id).Error; err != nil {
-		return "", err
+	var client *model.Client
+
+	if err := l.db.WithContext(ctx).Model(&model.Client{}).
+		Where("email = ?", email).
+		First(&client).Error; err != nil {
+		return "", "", err
 	}
-	if id != nil {
-		return config.RoleClient, nil
+
+	if client != nil {
+		if err := bcrypt.CompareHashAndPassword([]byte(client.Password), []byte(password)); err != nil {
+			return "", "", errors.New("invalid password")
+		}
+		return client.ID, config.RoleClient, nil
 	}
-	return "", errors.New("could not find user")
+
+	return "", "", errors.New("could not find user")
 }

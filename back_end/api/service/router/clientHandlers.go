@@ -8,6 +8,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary Get all clients
+// @Description Get all clients
+// @Tags Client
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param limit query int false "limit"
+// @Param offset query int false "offset"
+// @Sequrity in header
+// @Param Authorization header string true "Authorization"
+// @Success 200 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/client [get]
 func (r *Router) GetAllClients(c *gin.Context) {
 
 	role, _ := c.Get(config.Role)
@@ -33,6 +47,19 @@ func (r *Router) GetAllClients(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"clients": clients})
 }
 
+// @Summary Get clients by company id
+// @Description Get clients by company id
+// @Tags Client
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param limit query int false "limit"
+// @Param offset query int false "offset"
+// @Param Authorization header string true "Authorization"
+// @Success 200 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/client/company/{id} [get]
 func (r *Router) GetClientsByCompanyID(c *gin.Context) {
 	role, _ := c.Get(config.Role)
 	if role != config.RoleAdmin && role != config.RoleEmployee {
@@ -58,6 +85,19 @@ func (r *Router) GetClientsByCompanyID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"clients": clients})
 }
 
+// @Summary Get clients by name
+// @Description Get clients by name
+// @Tags Client
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param limit query int false "limit"
+// @Param offset query int false "offset"
+// @Param Authorization header string true "Authorization"
+// @Success 200 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/client/search/{name} [get]
 func (r *Router) GetClientsByName(c *gin.Context) {
 	role, _ := c.Get(config.Role)
 	if role != config.RoleAdmin && role != config.RoleEmployee {
@@ -83,6 +123,18 @@ func (r *Router) GetClientsByName(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"clients": clients})
 }
 
+// @Summary Get client by id
+// @Description Get client by id
+// @Tags Client
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Authorization"
+// @Param id path string true "Client ID"
+// @Success 200 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/client/{id} [get]
 func (r *Router) GetClientByID(c *gin.Context) {
 	role, _ := c.Get(config.Role)
 	contextID, _ := c.Get(config.Id)
@@ -103,6 +155,16 @@ func (r *Router) GetClientByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"client": client})
 }
 
+// @Summary Create client
+// @Description Create client
+// @Tags Client
+// @Accept json
+// @Produce json
+// @Param client body model.Client true "Client"
+// @Success 201 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/client [post]
 func (r *Router) CreateClient(c *gin.Context) {
 	var client model.Client
 	if err := c.ShouldBindJSON(&client); err != nil {
@@ -119,6 +181,19 @@ func (r *Router) CreateClient(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"client": client})
 }
 
+// @Summary Update client
+// @Description Update client
+// @Tags Client
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Authorization"
+// @Param id path string true "Client ID"
+// @Param client body model.Client true "Client"
+// @Success 200 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/client/{id} [patch]
 func (r *Router) UpdateClient(c *gin.Context) {
 	role, _ := c.Get(config.Role)
 	contextID, _ := c.Get(config.Id)
@@ -142,6 +217,18 @@ func (r *Router) UpdateClient(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"client": client})
 }
 
+// @Summary Delete client
+// @Description Delete client
+// @Tags Client
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Authorization"
+// @Param id path string true "Client ID"
+// @Success 200 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/client/{id} [delete]
 func (r *Router) DeleteClient(c *gin.Context) {
 	role, _ := c.Get(config.Role)
 	contextID, _ := c.Get(config.Id)

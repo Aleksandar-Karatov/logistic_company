@@ -2,58 +2,57 @@ package auth
 
 import (
 	"fmt"
+	"log"
 	"logistic_company/config"
 	"logistic_company/model"
 	"logistic_company/repository"
 	"net/http"
 	"strings"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 )
 
-type Claims struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
-	Role  string `json:"role"`
-	jwt.StandardClaims
+type CustomClaims struct {
+	ID                   string `json:"id"`
+	Email                string `json:"email"`
+	Role                 string `json:"role"`
+	jwt.RegisteredClaims        // The embedded struct for RegisteredClaims should work fine.
 }
 
 func JWTMiddleware(repos *repository.Repository, secretKey []byte) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header missing"})
+		// Extract the token from the Authorization header
+		tokenString := c.GetHeader("Authorization")
+		if tokenString == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
 			c.Abort()
 			return
 		}
 
-		// Extract token from "Bearer <token>"
-		parts := strings.Split(authHeader, " ")
-		if len(parts) != 2 || parts[0] != "Bearer" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization header format"})
-			c.Abort()
-			return
-		}
+		// Remove 'Bearer ' prefix if it exists
+		tokenString = strings.TrimPrefix(tokenString, "Bearer ")
 
-		tokenString := parts[1]
-
-		// Parse and validate token
-		token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		// Parse and validate the JWT token
+		token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+			// Ensure the signing method is HS256
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("unexpected signing method")
+				log.Printf("Unexpected signing method: %v", token.Header["alg"])
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
 			return secretKey, nil
 		})
 		if err != nil {
+			log.Printf("Error parsing token: %v", err)
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 			c.Abort()
 			return
 		}
 
-		claims, ok := token.Claims.(*Claims)
-		if !ok || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
+		// Extract claims from the token
+		claims, ok := token.Claims.(*CustomClaims)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
 			c.Abort()
 			return
 		}
@@ -62,27 +61,29 @@ func JWTMiddleware(repos *repository.Repository, secretKey []byte) gin.HandlerFu
 			var client model.Client
 			err := repos.ClientRepository.GetClientByID(c.Request.Context(), &client, claims.ID)
 			if err != nil {
+				log.Printf("Error getting client: %v", err)
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 				c.Abort()
 				return
 			}
 			c.Set(config.Id, client.ID)
 			c.Set(config.Role, config.RoleClient)
-			c.Set("email", client.Email)
-		} else if claims.Role == config.RoleEmployee {
+			c.Set(config.Email, client.Email)
+		} else if claims.Role == config.RoleEmployee || claims.Role == config.RoleAdmin || claims.Role == config.RoleCourrier {
 			var employee model.Employee
 			err := repos.EmployeeRepository.GetEmployeeById(c.Request.Context(), &employee, claims.ID)
 			if err != nil {
+				log.Printf("Error getting employee: %v", err)
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 				c.Abort()
 				return
 			}
 			c.Set(config.Id, employee.ID)
-			c.Set("email", employee.Email)
+			c.Set(config.Email, employee.Email)
 			c.Set(config.Role, employee.Role)
 
 		} else {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid role :D"})
 			c.Abort()
 			return
 		}

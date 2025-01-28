@@ -14,8 +14,9 @@ type Config struct {
 	DBPassword string `envconfig:"DB_PASSWORD"`
 	DBName     string `envconfig:"DB_NAME"`
 
-	APIhost string `envconfig:"API_HOST"`
-	APIport string `envconfig:"API_PORT"`
+	APIhost      string `envconfig:"API_HOST"`
+	APIport      string `envconfig:"API_PORT"`
+	JWTSecretKey string `envconfig:"JWT_SECRET_KEY"`
 }
 
 func LoadConfig() (*Config, error) {

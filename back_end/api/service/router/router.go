@@ -1,12 +1,14 @@
 package router
 
 import (
-	"crypto/rand"
+	_ "logistic_company/api/docs"
 	"logistic_company/api/service/auth"
 	"logistic_company/config"
 	"logistic_company/repository"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Router struct {
@@ -20,11 +22,8 @@ func NewRouter(repository *repository.Repository, cfg *config.Config) (r *Router
 	r = &Router{repository: repository,
 		cfg:       cfg,
 		ginEngine: gin.Default()}
+	r.secretKey = []byte(cfg.JWTSecretKey)
 	r.InitializeRoutes()
-	r.secretKey, err = generateSecretKey()
-	if err != nil {
-		return nil, err
-	}
 	return r, nil
 }
 
@@ -32,8 +31,13 @@ func NewRouter(repository *repository.Repository, cfg *config.Config) (r *Router
 // @version 1.0
 // @description Logistic Company API
 // @host localhost:8080
-// @BasePath /api
+// @BasePath /
+// @securityDefinitions.apikey BearerAuth
+// @type apiKey
+// @in header
+// @name Authorization
 func (r *Router) InitializeRoutes() {
+	r.ginEngine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	api := r.ginEngine.Group("/api")
 	{
 		r.ginEngine.POST("/login", r.Login)
@@ -41,41 +45,41 @@ func (r *Router) InitializeRoutes() {
 		v1 := api.Group("/v1")
 		{
 			v1.Use(auth.JWTMiddleware(r.repository, r.secretKey))
-			companyApi := api.Group("/company")
+			companyApi := v1.Group("/company")
 			{
 				companyApi.GET("", r.GetAllCompanies)
 				companyApi.GET("/:id", r.GetCompanyByID)
-				companyApi.GET("/:name", r.GetCompaniesByName)
+				companyApi.GET("/search/:name", r.GetCompaniesByName)
 				companyApi.POST("/:id/revenue", r.GetCompanyRevenue)
 				companyApi.POST("", r.CreateCompany)
 				companyApi.PATCH(":id", r.UpdateCompany)
 				companyApi.DELETE(":id", r.DeleteCompany)
 			}
 
-			employeeApi := api.Group("/employee")
+			employeeApi := v1.Group("/employee")
 			{
 				employeeApi.GET("", r.GetAllEmployees)
 				employeeApi.GET("/company/:id", r.GetEmployeesByCompanyID)
-				employeeApi.GET(":name", r.GetEmployeesByName)
+				employeeApi.GET("/search/:name", r.GetEmployeesByName)
 				employeeApi.GET("/:id", r.GetEmployeeByID)
 				employeeApi.POST("", r.CreateEmployee)
-				employeeApi.PATCH(":id", r.UpdateEmployee)
-				companyApi.DELETE(":id", r.DeleteEmployee)
+				employeeApi.PATCH("/:id", r.UpdateEmployee)
+				employeeApi.DELETE("/:id", r.DeleteEmployee)
 
 			}
 
-			officeApi := api.Group("/office")
+			officeApi := v1.Group("/office")
 			{
 				officeApi.GET("", r.GetAllOffices)
-				officeApi.GET("location/:location", r.GetOfficesByLocation)
+				officeApi.GET("/location/:location", r.GetOfficesByLocation)
 				officeApi.GET("/company/:id", r.GetOfficesByCompanyID)
 				officeApi.GET("/:id", r.GetOfficeByID)
 				officeApi.POST("", r.CreateOffice)
-				officeApi.PATCH(":id", r.UpdateOffice)
-				companyApi.DELETE(":id", r.DeleteOffice)
+				officeApi.PATCH("/:id", r.UpdateOffice)
+				officeApi.DELETE("/:id", r.DeleteOffice)
 			}
 
-			packageApi := api.Group("/package")
+			packageApi := v1.Group("/package")
 			{
 				packageApi.GET("", r.GetAllPackages)
 				packageApi.GET("/sender/:id", r.GetPackagesBySenderID)
@@ -84,18 +88,18 @@ func (r *Router) InitializeRoutes() {
 				packageApi.GET("/not_delivered", r.GetNotDeliveredPackages)
 				packageApi.GET("/:id", r.GetPackageByID)
 				packageApi.POST("", r.CreatePackage)
-				packageApi.PATCH(":id", r.UpdatePackage)
-				companyApi.DELETE(":id", r.DeletePackage)
+				packageApi.PATCH("/:id", r.UpdatePackage)
+				packageApi.DELETE("/:id", r.DeletePackage)
 			}
 
-			clientApi := api.Group("/client")
+			clientApi := v1.Group("/client")
 			{
 				clientApi.GET("", r.GetAllClients)
 				clientApi.GET("/company/:id", r.GetClientsByCompanyID)
-				clientApi.GET("/:name", r.GetClientsByName)
+				clientApi.GET("/search/:name", r.GetClientsByName)
 				clientApi.GET("/:id", r.GetClientByID)
-				clientApi.PATCH(":id", r.UpdateClient)
-				companyApi.DELETE(":id", r.DeleteClient)
+				clientApi.PATCH("/:id", r.UpdateClient)
+				clientApi.DELETE("/:id", r.DeleteClient)
 			}
 		}
 	}
@@ -103,13 +107,4 @@ func (r *Router) InitializeRoutes() {
 
 func (r *Router) Run() error {
 	return r.ginEngine.Run(r.cfg.APIhost + ":" + r.cfg.APIport)
-}
-
-func generateSecretKey() ([]byte, error) {
-	key := make([]byte, 32) // 256-bit key
-	_, err := rand.Read(key)
-	if err != nil {
-		return nil, err
-	}
-	return key, nil
 }

@@ -12,9 +12,9 @@ type Employee struct {
 	Password  string   `gorm:"column:password;not null;type:varchar(255)"`
 	Phone     string   `gorm:"column:phone;not null;unique;type:varchar(255)"`
 	Role      string   `gorm:"column:role;not null;type:varchar(255)"`
-	CompanyID string   `gorm:"column:company_id;not null;type:varchar(255)"`
+	CompanyID *string   `gorm:"column:company_id;null;type:varchar(255)"`
 	Company   *Company `gorm:"foreignKey:CompanyID"`
-	OfficeID  string   `gorm:"column:office_id;type:varchar(255)"`
+	OfficeID  *string   `gorm:"column:office_id;type:varchar(255)"`
 	Office    *Office  `gorm:"foreignKey:OfficeID"`
 }
 
