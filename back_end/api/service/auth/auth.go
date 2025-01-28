@@ -60,7 +60,7 @@ func JWTMiddleware(repos *repository.Repository, secretKey []byte) gin.HandlerFu
 
 		if claims.Role == config.RoleClient {
 			var client model.Client
-			err := repos.ClientRepository.GetClientByID(&client, claims.ID)
+			err := repos.ClientRepository.GetClientByID(c.Request.Context(), &client, claims.ID)
 			if err != nil {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 				c.Abort()
@@ -71,7 +71,7 @@ func JWTMiddleware(repos *repository.Repository, secretKey []byte) gin.HandlerFu
 			c.Set("email", client.Email)
 		} else if claims.Role == config.RoleEmployee {
 			var employee model.Employee
-			err := repos.EmployeeRepository.GetEmployeeById(&employee, claims.ID)
+			err := repos.EmployeeRepository.GetEmployeeById(c.Request.Context(), &employee, claims.ID)
 			if err != nil {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 				c.Abort()

@@ -17,7 +17,7 @@ func (r *Router) GetAllPackages(c *gin.Context) {
 
 	var packages []model.Package
 
-	err = r.repository.PackageRepository.GetAllPackages(&packages, limit, offset)
+	err = r.repository.PackageRepository.GetAllPackages(c.Request.Context(), &packages, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -42,7 +42,7 @@ func (r *Router) GetPackagesBySenderID(c *gin.Context) {
 
 	var packages []model.Package
 
-	err = r.repository.PackageRepository.GetPackagesBySenderID(&packages, id, limit, offset)
+	err = r.repository.PackageRepository.GetPackagesBySenderID(c.Request.Context(), &packages, id, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -67,7 +67,7 @@ func (r *Router) GetPackagesByReceiverID(c *gin.Context) {
 
 	var packages []model.Package
 
-	err = r.repository.PackageRepository.GetPackagesByReceiverID(&packages, id, limit, offset)
+	err = r.repository.PackageRepository.GetPackagesByReceiverID(c.Request.Context(), &packages, id, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -92,7 +92,7 @@ func (r *Router) GetPackagesByEmployeeID(c *gin.Context) {
 
 	var packages []model.Package
 
-	err = r.repository.PackageRepository.GetPackagesByEmployeeID(&packages, id, limit, offset)
+	err = r.repository.PackageRepository.GetPackagesByEmployeeID(c.Request.Context(), &packages, id, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -110,7 +110,7 @@ func (r *Router) GetNotDeliveredPackages(c *gin.Context) {
 
 	var packages []model.Package
 
-	err = r.repository.PackageRepository.GetNotDeliveredPackages(&packages, limit, offset)
+	err = r.repository.PackageRepository.GetNotDeliveredPackages(c.Request.Context(), &packages, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -124,7 +124,7 @@ func (r *Router) GetPackageByID(c *gin.Context) {
 
 	var packageModel model.Package
 
-	err := r.repository.PackageRepository.GetPackageById(&packageModel, id)
+	err := r.repository.PackageRepository.GetPackageById(c.Request.Context(), &packageModel, id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -160,7 +160,7 @@ func (r *Router) CreatePackage(c *gin.Context) {
 	packageModel.DeliveryStatus = "created"
 	packageModel.Price *= packageModel.Weight
 
-	err := r.repository.PackageRepository.CreatePackage(&packageModel)
+	err := r.repository.PackageRepository.CreatePackage(c.Request.Context(), &packageModel)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -183,7 +183,7 @@ func (r *Router) UpdatePackage(c *gin.Context) {
 		return
 	}
 
-	err := r.repository.PackageRepository.UpdatePackage(&packageModel)
+	err := r.repository.PackageRepository.UpdatePackage(c.Request.Context(), &packageModel)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -203,7 +203,7 @@ func (r *Router) DeletePackage(c *gin.Context) {
 
 	id := c.Param(config.Id)
 
-	err := r.repository.PackageRepository.DeletePackage(&packageModel, id)
+	err := r.repository.PackageRepository.DeletePackage(c.Request.Context(), &packageModel, id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

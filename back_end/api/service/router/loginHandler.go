@@ -24,7 +24,7 @@ func (r *Router) Login(c *gin.Context) {
 		return
 	}
 
-	role, err := r.repository.LoginRepository.Login(payload.Email, payload.Password)
+	role, err := r.repository.LoginRepository.Login(c.Request.Context(), payload.Email, payload.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 		return
@@ -43,6 +43,4 @@ func (r *Router) Login(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
-	return
-
 }

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"errors"
 	"logistic_company/config"
 	"logistic_company/model"
@@ -18,9 +19,9 @@ func NewLoginRepository(db *gorm.DB) *LoginRepository {
 	}
 }
 
-func (l *LoginRepository) Login(email, password string) (string, error) {
+func (l *LoginRepository) Login(ctx context.Context, email, password string) (string, error) {
 	var employee *model.Employee
-	if err := l.db.Model(&model.Employee{}).
+	if err := l.db.WithContext(ctx).Model(&model.Employee{}).
 		Where("email = ? AND password = ?", email, password).
 		First(&employee).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return "", err
@@ -30,7 +31,7 @@ func (l *LoginRepository) Login(email, password string) (string, error) {
 	}
 	var id *string
 
-	if err := l.db.Model(&model.Client{}).Select(config.Id).
+	if err := l.db.WithContext(ctx).Model(&model.Client{}).Select(config.Id).
 		Where("email = ? AND password = ?", email, password).
 		First(&id).Error; err != nil {
 		return "", err

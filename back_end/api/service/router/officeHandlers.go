@@ -18,7 +18,7 @@ func (r *Router) GetAllOffices(c *gin.Context) {
 
 	var offices []model.Office
 
-	err = r.repository.OfficeRepository.GetAllOffices(&offices, limit, offset)
+	err = r.repository.OfficeRepository.GetAllOffices(c.Request.Context(), &offices, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -33,7 +33,7 @@ func (r *Router) GetOfficeByID(c *gin.Context) {
 
 	var office model.Office
 
-	err := r.repository.OfficeRepository.GetOfficeById(&office, id)
+	err := r.repository.OfficeRepository.GetOfficeById(c.Request.Context(), &office, id)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -57,7 +57,7 @@ func (r *Router) CreateOffice(c *gin.Context) {
 		return
 	}
 
-	err := r.repository.OfficeRepository.CreateOffice(&office)
+	err := r.repository.OfficeRepository.CreateOffice(c.Request.Context(), &office)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -83,7 +83,7 @@ func (r *Router) UpdateOffice(c *gin.Context) {
 	}
 
 	office.ID = id
-	err := r.repository.OfficeRepository.UpdateOffice(&office)
+	err := r.repository.OfficeRepository.UpdateOffice(c.Request.Context(), &office)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -101,7 +101,7 @@ func (r *Router) DeleteOffice(c *gin.Context) {
 
 	id := c.Param(config.Id)
 
-	err := r.repository.OfficeRepository.DeleteOffice(id)
+	err := r.repository.OfficeRepository.DeleteOffice(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -121,7 +121,7 @@ func (r *Router) GetOfficesByLocation(c *gin.Context) {
 	location := c.Param("location")
 	var offices []model.Office
 
-	err = r.repository.OfficeRepository.GetOfficesByLocation(&offices, limit, offset, location)
+	err = r.repository.OfficeRepository.GetOfficesByLocation(c.Request.Context(), &offices, limit, offset, location)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -141,7 +141,7 @@ func (r *Router) GetOfficesByCompanyID(c *gin.Context) {
 	id := c.Param(config.Id)
 	var offices []model.Office
 
-	err = r.repository.OfficeRepository.GetOfficesByCompanyID(&offices, id, limit, offset)
+	err = r.repository.OfficeRepository.GetOfficesByCompanyID(c.Request.Context(), &offices, id, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

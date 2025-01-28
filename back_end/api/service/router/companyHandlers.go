@@ -16,7 +16,7 @@ func (r *Router) GetAllCompanies(c *gin.Context) {
 	}
 	var companies []model.Company
 
-	err = r.repository.CompanyRepository.GetAllCompanies(&companies, limit, offset)
+	err = r.repository.CompanyRepository.GetAllCompanies(c.Request.Context(), &companies, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -29,7 +29,7 @@ func (r *Router) GetCompanyByID(c *gin.Context) {
 	id := c.Param(config.Id)
 	var company model.Company
 
-	err := r.repository.CompanyRepository.GetCompanyById(&company, id)
+	err := r.repository.CompanyRepository.GetCompanyById(c.Request.Context(), &company, id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -48,7 +48,7 @@ func (r *Router) GetCompaniesByName(c *gin.Context) {
 
 	var companies []model.Company
 
-	err = r.repository.CompanyRepository.GetCompaniesByName(&companies, name, limit, offset)
+	err = r.repository.CompanyRepository.GetCompaniesByName(c.Request.Context(), &companies, name, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -66,7 +66,8 @@ func (r *Router) GetCompanyRevenue(c *gin.Context) {
 	}
 	var company model.Company
 
-	err := r.repository.CompanyRepository.GetCompanyWithRevenuePeriod(&company, id, revenueRequest.StartDate, revenueRequest.EndDate)
+	err := r.repository.CompanyRepository.
+		GetCompanyWithRevenuePeriod(c.Request.Context(), &company, id, revenueRequest.StartDate, revenueRequest.EndDate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -88,7 +89,7 @@ func (r *Router) CreateCompany(c *gin.Context) {
 		return
 	}
 
-	err := r.repository.CompanyRepository.CreateCompany(&company)
+	err := r.repository.CompanyRepository.CreateCompany(c.Request.Context(), &company)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -111,7 +112,7 @@ func (r *Router) UpdateCompany(c *gin.Context) {
 		return
 	}
 	company.ID = id
-	err := r.repository.CompanyRepository.UpdateCompany(&company)
+	err := r.repository.CompanyRepository.UpdateCompany(c.Request.Context(), &company)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -128,7 +129,7 @@ func (r *Router) DeleteCompany(c *gin.Context) {
 	}
 	id := c.Param(config.Id)
 
-	err := r.repository.CompanyRepository.DeleteCompany(id)
+	err := r.repository.CompanyRepository.DeleteCompany(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

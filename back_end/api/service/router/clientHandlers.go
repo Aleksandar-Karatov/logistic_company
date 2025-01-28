@@ -24,7 +24,7 @@ func (r *Router) GetAllClients(c *gin.Context) {
 
 	var clients []model.Client
 
-	err = r.repository.ClientRepository.GetAllClients(&clients, limit, offset)
+	err = r.repository.ClientRepository.GetAllClients(c.Request.Context(), &clients, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -49,7 +49,7 @@ func (r *Router) GetClientsByCompanyID(c *gin.Context) {
 
 	var clients []model.Client
 
-	err = r.repository.ClientRepository.GetClientsByCompanyID(&clients, id, limit, offset)
+	err = r.repository.ClientRepository.GetClientsByCompanyID(c.Request.Context(), &clients, id, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -74,7 +74,7 @@ func (r *Router) GetClientsByName(c *gin.Context) {
 
 	var clients []model.Client
 
-	err = r.repository.ClientRepository.GetClientsByName(&clients, name, limit, offset)
+	err = r.repository.ClientRepository.GetClientsByName(c.Request.Context(), &clients, name, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -94,7 +94,7 @@ func (r *Router) GetClientByID(c *gin.Context) {
 	id := c.Param(config.Id)
 	var client model.Client
 
-	err := r.repository.ClientRepository.GetClientByID(&client, id)
+	err := r.repository.ClientRepository.GetClientByID(c.Request.Context(), &client, id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -110,7 +110,7 @@ func (r *Router) CreateClient(c *gin.Context) {
 		return
 	}
 
-	err := r.repository.ClientRepository.CreateClient(&client)
+	err := r.repository.ClientRepository.CreateClient(c.Request.Context(), &client)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -133,7 +133,7 @@ func (r *Router) UpdateClient(c *gin.Context) {
 		return
 	}
 
-	err := r.repository.ClientRepository.UpdateClient(&client)
+	err := r.repository.ClientRepository.UpdateClient(c.Request.Context(), &client)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -152,7 +152,7 @@ func (r *Router) DeleteClient(c *gin.Context) {
 
 	id := c.Param(config.Id)
 
-	err := r.repository.ClientRepository.DeleteClient(id)
+	err := r.repository.ClientRepository.DeleteClient(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

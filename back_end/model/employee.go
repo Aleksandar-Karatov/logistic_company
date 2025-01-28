@@ -6,14 +6,16 @@ import (
 )
 
 type Employee struct {
-	ID       string  `gorm:"primaryKey;type:varchar(255)"`
-	Name     string  `gorm:"column:employee_name;not null;unique;type:varchar(255)"`
-	Email    string  `gorm:"column:email;not null;unique;type:varchar(255)"`
-	Password string  `gorm:"column:password;not null;type:varchar(255)"`
-	Phone    string  `gorm:"column:phone;not null;unique;type:varchar(255)"`
-	Role     string  `gorm:"column:role;not null;type:varchar(255)"`
-	OfficeID string  `gorm:"column:office_id;type:varchar(255)"`
-	Office   *Office `gorm:"foreignKey:OfficeID"`
+	ID        string   `gorm:"primaryKey;type:varchar(255)"`
+	Name      string   `gorm:"column:employee_name;not null;unique;type:varchar(255)"`
+	Email     string   `gorm:"column:email;not null;unique;type:varchar(255)"`
+	Password  string   `gorm:"column:password;not null;type:varchar(255)"`
+	Phone     string   `gorm:"column:phone;not null;unique;type:varchar(255)"`
+	Role      string   `gorm:"column:role;not null;type:varchar(255)"`
+	CompanyID string   `gorm:"column:company_id;not null;type:varchar(255)"`
+	Company   *Company `gorm:"foreignKey:CompanyID"`
+	OfficeID  string   `gorm:"column:office_id;type:varchar(255)"`
+	Office    *Office  `gorm:"foreignKey:OfficeID"`
 }
 
 func (Employee) TableName() string {

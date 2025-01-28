@@ -22,7 +22,7 @@ func (r *Router) GetAllEmployees(c *gin.Context) {
 	}
 	var employees []model.Employee
 
-	err = r.repository.EmployeeRepository.GetAllEmployees(&employees, limit, offset)
+	err = r.repository.EmployeeRepository.GetAllEmployees(c.Request.Context(), &employees, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -41,7 +41,7 @@ func (r *Router) GetEmployeeByID(c *gin.Context) {
 	id := c.Param(config.Id)
 	var employee model.Employee
 
-	err := r.repository.EmployeeRepository.GetEmployeeById(&employee, id)
+	err := r.repository.EmployeeRepository.GetEmployeeById(c.Request.Context(), &employee, id)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -65,7 +65,7 @@ func (r *Router) CreateEmployee(c *gin.Context) {
 		return
 	}
 
-	err := r.repository.EmployeeRepository.CreateEmployee(&employee)
+	err := r.repository.EmployeeRepository.CreateEmployee(c.Request.Context(), &employee)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -90,7 +90,7 @@ func (r *Router) GetEmployeesByCompanyID(c *gin.Context) {
 
 	var employees []model.Employee
 
-	err = r.repository.EmployeeRepository.GetEmployeesByCompanyID(&employees, id, limit, offset)
+	err = r.repository.EmployeeRepository.GetEmployeesByCompanyID(c.Request.Context(), &employees, id, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -115,7 +115,7 @@ func (r *Router) GetEmployeesByName(c *gin.Context) {
 
 	var employees []model.Employee
 
-	err = r.repository.EmployeeRepository.GetEmployeesByName(&employees, name, limit, offset)
+	err = r.repository.EmployeeRepository.GetEmployeesByName(c.Request.Context(), &employees, name, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -141,7 +141,7 @@ func (r *Router) UpdateEmployee(c *gin.Context) {
 		return
 	}
 
-	err := r.repository.EmployeeRepository.UpdateEmployee(&employee)
+	err := r.repository.EmployeeRepository.UpdateEmployee(c.Request.Context(), &employee)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -159,7 +159,7 @@ func (r *Router) DeleteEmployee(c *gin.Context) {
 		return
 	}
 
-	err := r.repository.EmployeeRepository.DeleteEmployee(id)
+	err := r.repository.EmployeeRepository.DeleteEmployee(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -18,11 +18,11 @@ type Package struct {
 	IsDeliveredToOffice bool       `gorm:"column:is_delivered_to_office;not null;type:bool"`
 	DeliveryStatus      string     `gorm:"column:delivery_status;not null;type:varchar(255)"`
 	DeliveryDate        *time.Time `gorm:"column:delivery_date;type:datetime"`
-	RegisteredBy        string     `gorm:"column:registered_by;type:varchar(255)"`
 
-	Employee   *Employee `gorm:"foreignKey:RegisteredBy"`
-	CourrierID string    `gorm:"column:courrier_id;not null;type:varchar(255)"`
-	Courrier   *Employee `gorm:"foreignKey:CourrierID"`
+	RegisteredByID string    `gorm:"column:registered_by;type:varchar(255)"`
+	RegisteredBy   *Employee `gorm:"foreignKey:RegisteredByID"`
+	CourrierID     string    `gorm:"column:courrier_id;not null;type:varchar(255)"`
+	Courrier       *Employee `gorm:"foreignKey:CourrierID"`
 
 	OfficeAcceptedAtID string  `gorm:"column:office_accepted_at;not null;type:varchar(255)"`
 	OfficeAcceptedAt   *Office `gorm:"foreignKey:OfficeAcceptedAtID"`
