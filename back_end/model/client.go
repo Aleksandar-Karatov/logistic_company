@@ -6,13 +6,17 @@ import (
 	"gorm.io/gorm"
 )
 
+type ClientRegister struct {
+	Client
+	Password string `gorm:"column:password;not null;type:varchar(255)" json:"password" binding:"required"`
+}
+
 type Client struct {
-	ID               string `gorm:"primaryKey;type:varchar(255)"`
-	Name             string `gorm:"column:client_name;not null;unique;type:varchar(255)"`
-	Email            string `gorm:"column:email;not null;unique;type:varchar(255)"`
-	Password         string `gorm:"column:password;not null;type:varchar(255)"`
-	Phone            string `gorm:"column:phone;not null;unique;type:varchar(255)"`
-	FavoriteOfficeID string `gorm:"column:favorite_office_id;not null;unique;type:varchar(255)"`
+	ID               string `gorm:"primaryKey;type:varchar(255)" json:"id"`
+	Name             string `gorm:"column:client_name;not null;unique;type:varchar(255)" json:"name" binding:"required"`
+	Email            string `gorm:"column:email;not null;unique;type:varchar(255)" json:"email" binding:"required"`
+	Phone            string `gorm:"column:phone;not null;unique;type:varchar(255)" json:"phone" binding:"required"`
+	FavoriteOfficeID string `gorm:"column:favorite_office_id;not null;unique;type:varchar(255)" json:"favoriteOfficeID"`
 }
 
 func (Client) TableName() string {
@@ -23,7 +27,7 @@ func (Client) TableName() string {
 // It sets the Password field of the Client to a bcrypt hash of the
 // plaintext password that was set. This is a security measure to protect
 // the password from being stored in plaintext in the database.
-func (c *Client) BeforeCreate(tx *gorm.DB) (err error) {
+func (c *ClientRegister) BeforeCreate(tx *gorm.DB) (err error) {
 	c.ID = uuid.New().String()
 	bytes, err := bcrypt.GenerateFromPassword([]byte(c.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -38,7 +42,7 @@ func (c *Client) BeforeCreate(tx *gorm.DB) (err error) {
 // field of the Client to a bcrypt hash of the plaintext password that was
 // set. This is a security measure to protect the password from being stored
 // in plaintext in the database.
-func (c *Client) BeforeUpdate(tx *gorm.DB) (err error) {
+func (c *ClientRegister) BeforeUpdate(tx *gorm.DB) (err error) {
 	if c.Password != "" {
 		bytes, err := bcrypt.GenerateFromPassword([]byte(c.Password), bcrypt.DefaultCost)
 		if err != nil {

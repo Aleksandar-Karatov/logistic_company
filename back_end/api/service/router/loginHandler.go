@@ -21,7 +21,7 @@ import (
 // @Success 200 {object} gin.H
 // @Failure 400 {object} gin.H
 // @Failure 401 {object} gin.H
-// @Router /login [post]
+// @Router /api/login [post]
 func (r *Router) Login(c *gin.Context) {
 	var payload model.LoginPayload
 	if err := c.ShouldBindJSON(&payload); err != nil {

@@ -27,21 +27,12 @@ func NewRouter(repository *repository.Repository, cfg *config.Config) (r *Router
 	return r, nil
 }
 
-// @title Logistic Company API
-// @version 1.0
-// @description Logistic Company API
-// @host localhost:8080
-// @BasePath /
-// @securityDefinitions.apikey BearerAuth
-// @type apiKey
-// @in header
-// @name Authorization
 func (r *Router) InitializeRoutes() {
 	r.ginEngine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	api := r.ginEngine.Group("/api")
 	{
-		r.ginEngine.POST("/login", r.Login)
-		r.ginEngine.POST("/client/register", r.CreateClient)
+		api.POST("/login", r.Login)
+		api.POST("/client/register", r.CreateClient)
 		v1 := api.Group("/v1")
 		{
 			v1.Use(auth.JWTMiddleware(r.repository, r.secretKey))

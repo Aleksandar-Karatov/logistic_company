@@ -6,10 +6,10 @@ import (
 )
 
 type Office struct {
-	ID        string   `gorm:"primaryKey;type:varchar(255)"`
-	Location  string   `gorm:"column:location;not null;type:varchar(255)"`
-	CompanyID string   `gorm:"column:company_id;not null;type:varchar(255)"`
-	Company   *Company `gorm:"foreignKey:CompanyID"`
+	ID        string   `gorm:"primaryKey;type:varchar(255)" json:"id"`
+	Location  string   `gorm:"column:location;not null;type:varchar(255)" json:"location" binding:"required"`
+	CompanyID string   `gorm:"column:company_id;not null;type:varchar(255)" json:"companyID" binding:"required"`
+	Company   *Company `gorm:"foreignKey:CompanyID" json:"company"`
 }
 
 func (Office) TableName() string {

@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   gin.H:
     additionalProperties: {}
@@ -12,10 +13,71 @@ definitions:
         type: string
       name:
         type: string
+      phone:
+        type: string
+    required:
+    - email
+    - name
+    - phone
+    type: object
+  model.ClientRegister:
+    properties:
+      email:
+        type: string
+      favoriteOfficeID:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
       password:
         type: string
       phone:
         type: string
+    required:
+    - email
+    - name
+    - password
+    - phone
+    type: object
+  model.Company:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      revenue:
+        type: number
+    required:
+    - name
+    - revenue
+    type: object
+  model.Employee:
+    properties:
+      company:
+        $ref: '#/definitions/model.Company'
+      companyID:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      office:
+        $ref: '#/definitions/model.Office'
+      officeID:
+        type: string
+      phone:
+        type: string
+      role:
+        type: string
+    required:
+    - companyID
+    - email
+    - name
+    - phone
+    - role
     type: object
   model.LoginPayload:
     properties:
@@ -23,49 +85,88 @@ definitions:
         type: string
       password:
         type: string
+    required:
+    - email
+    - password
     type: object
+  model.Office:
+    properties:
+      company:
+        $ref: '#/definitions/model.Company'
+      companyID:
+        type: string
+      id:
+        type: string
+      location:
+        type: string
+    required:
+    - companyID
+    - location
+    type: object
+  model.Package:
+    properties:
+      company:
+        $ref: '#/definitions/model.Company'
+      companyID:
+        type: string
+      courrier:
+        $ref: '#/definitions/model.Employee'
+      courrierID:
+        type: string
+      deliveryDate:
+        type: string
+      deliveryLocation:
+        type: string
+      deliveryStatus:
+        type: string
+      id:
+        type: string
+      isDeliveredToOffice:
+        type: boolean
+      officeAcceptedAt:
+        $ref: '#/definitions/model.Office'
+      officeAcceptedAtID:
+        type: string
+      officeDeliveredAt:
+        $ref: '#/definitions/model.Office'
+      officeDeliveredAtID:
+        type: string
+      price:
+        type: number
+      receiver:
+        $ref: '#/definitions/model.Client'
+      receiverID:
+        type: string
+      registeredBy:
+        $ref: '#/definitions/model.Employee'
+      registeredByID:
+        type: string
+      sender:
+        $ref: '#/definitions/model.Client'
+      senderID:
+        type: string
+      weight:
+        type: number
+    required:
+    - companyID
+    - courrierID
+    - deliveryLocation
+    - isDeliveredToOffice
+    - officeAcceptedAtID
+    - officeDeliveredAtID
+    - receiverID
+    - registeredByID
+    - senderID
+    - weight
+    type: object
+host: localhost:8080
 info:
   contact: {}
+  description: Logistic Company API
+  title: Logistic Company API
+  version: "1.0"
 paths:
-  /api/v1/client:
-    get:
-      consumes:
-      - application/json
-      description: Get all clients
-      parameters:
-      - description: limit
-        in: query
-        name: limit
-        type: integer
-      - description: offset
-        in: query
-        name: offset
-        type: integer
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/gin.H'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/gin.H'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/gin.H'
-      security:
-      - BearerAuth: []
-      summary: Get all clients
-      tags:
-      - Client
+  /api/client/register:
     post:
       consumes:
       - application/json
@@ -83,7 +184,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/gin.H'
+            $ref: '#/definitions/model.ClientRegister'
         "400":
           description: Bad Request
           schema:
@@ -95,17 +196,78 @@ paths:
       summary: Create client
       tags:
       - Client
+  /api/login:
+    post:
+      consumes:
+      - application/json
+      description: Logs in a user
+      parameters:
+      - description: Login payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/model.LoginPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Login
+      tags:
+      - login
+  /api/v1/client:
+    get:
+      consumes:
+      - application/json
+      description: Get all clients
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Client'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get all clients
+      tags:
+      - Client
   /api/v1/client/{id}:
     delete:
       consumes:
       - application/json
       description: Delete client
       parameters:
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Client ID
         in: path
         name: id
@@ -136,11 +298,6 @@ paths:
       - application/json
       description: Get client by id
       parameters:
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Client ID
         in: path
         name: id
@@ -152,7 +309,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/gin.H'
+            $ref: '#/definitions/model.Client'
         "400":
           description: Bad Request
           schema:
@@ -193,7 +350,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/gin.H'
+            $ref: '#/definitions/model.Client'
         "400":
           description: Bad Request
           schema:
@@ -203,6 +360,7 @@ paths:
           schema:
             $ref: '#/definitions/gin.H'
       security:
+      - BearerAuth: []
       - BearerAuth: []
       summary: Update client
       tags:
@@ -221,18 +379,15 @@ paths:
         in: query
         name: offset
         type: integer
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/gin.H'
+            items:
+              $ref: '#/definitions/model.Client'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -260,9 +415,104 @@ paths:
         in: query
         name: offset
         type: integer
-      - description: Authorization
-        in: header
-        name: Authorization
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Client'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get clients by name
+      tags:
+      - Client
+  /api/v1/company:
+    get:
+      consumes:
+      - application/json
+      description: Get all companies
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Company'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get all companies
+      tags:
+      - Company
+    post:
+      consumes:
+      - application/json
+      description: Create company
+      parameters:
+      - description: Company details
+        in: body
+        name: company
+        required: true
+        schema:
+          $ref: '#/definitions/model.Company'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Company'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Create company
+      tags:
+      - Company
+  /api/v1/company/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete company
+      parameters:
+      - description: Company ID
+        in: path
+        name: id
         required: true
         type: string
       produces:
@@ -282,21 +532,235 @@ paths:
             $ref: '#/definitions/gin.H'
       security:
       - BearerAuth: []
-      summary: Get clients by name
+      summary: Delete company
       tags:
-      - Client
-  /login:
+      - Company
+    get:
+      consumes:
+      - application/json
+      description: Get company by id
+      parameters:
+      - description: Company ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Company'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get company by id
+      tags:
+      - Company
+    patch:
+      consumes:
+      - application/json
+      description: Update company
+      parameters:
+      - description: Company ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Company details
+        in: body
+        name: company
+        required: true
+        schema:
+          $ref: '#/definitions/model.Company'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Company'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Update company
+      tags:
+      - Company
+  /api/v1/company/{id}/revenue:
+    get:
+      consumes:
+      - application/json
+      description: Get company revenue
+      parameters:
+      - description: Company ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Start date
+        in: query
+        name: start_date
+        required: true
+        type: string
+      - description: End date
+        in: query
+        name: end_date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Company'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get company revenue
+      tags:
+      - Company
+  /api/v1/company/search/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Get companies by name
+      parameters:
+      - description: Company name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Company'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get companies by name
+      tags:
+      - Company
+  /api/v1/employee:
+    get:
+      consumes:
+      - application/json
+      description: Get all employees
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Employee'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get all employees
+      tags:
+      - Employee
     post:
       consumes:
       - application/json
-      description: Logs in a user
+      description: Create employee
       parameters:
-      - description: Login payload
+      - description: Employee details
         in: body
-        name: payload
+        name: employee
         required: true
         schema:
-          $ref: '#/definitions/model.LoginPayload'
+          $ref: '#/definitions/model.Employee'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Employee'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Create employee
+      tags:
+      - Employee
+  /api/v1/employee/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete employee
+      parameters:
+      - description: Employee ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -308,11 +772,711 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/gin.H'
-        "401":
-          description: Unauthorized
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/gin.H'
-      summary: Login
+      security:
+      - BearerAuth: []
+      summary: Delete employee
       tags:
-      - login
+      - Employee
+    get:
+      consumes:
+      - application/json
+      description: Get employee by ID
+      parameters:
+      - description: Employee ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Employee'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get employee by ID
+      tags:
+      - Employee
+    patch:
+      consumes:
+      - application/json
+      description: Update employee
+      parameters:
+      - description: Employee ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Employee details
+        in: body
+        name: employee
+        required: true
+        schema:
+          $ref: '#/definitions/model.Employee'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Employee'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Update employee
+      tags:
+      - Employee
+  /api/v1/employee/company/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get employees by company ID
+      parameters:
+      - description: Company ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Employee'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get employees by company ID
+      tags:
+      - Employee
+  /api/v1/employee/search/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Get employees by name
+      parameters:
+      - description: Name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Employee'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get employees by name
+      tags:
+      - Employee
+  /api/v1/office:
+    get:
+      consumes:
+      - application/json
+      description: Get all offices
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Office'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get all offices
+      tags:
+      - Office
+    post:
+      consumes:
+      - application/json
+      description: Create office
+      parameters:
+      - description: Office details
+        in: body
+        name: office
+        required: true
+        schema:
+          $ref: '#/definitions/model.Office'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Office'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Create office
+      tags:
+      - Office
+  /api/v1/office/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete office
+      parameters:
+      - description: Office ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Delete office
+      tags:
+      - Office
+    get:
+      consumes:
+      - application/json
+      description: Get office by id
+      parameters:
+      - description: Office ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Office'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get office by id
+      tags:
+      - Office
+    patch:
+      consumes:
+      - application/json
+      description: Update office
+      parameters:
+      - description: Office ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Office details
+        in: body
+        name: office
+        required: true
+        schema:
+          $ref: '#/definitions/model.Office'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Office'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Update office
+      tags:
+      - Office
+  /api/v1/office/company/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get offices by company id
+      parameters:
+      - description: Company ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get offices by company id
+      tags:
+      - Office
+  /api/v1/office/location/{location}:
+    get:
+      consumes:
+      - application/json
+      description: Get offices by location
+      parameters:
+      - description: Location
+        in: path
+        name: location
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get offices by location
+      tags:
+      - Office
+  /api/v1/package:
+    get:
+      consumes:
+      - application/json
+      description: Get all packages
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Package'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get all packages
+      tags:
+      - Package
+    patch:
+      consumes:
+      - application/json
+      description: Update package
+      parameters:
+      - description: Package
+        in: body
+        name: package
+        required: true
+        schema:
+          $ref: '#/definitions/model.Package'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Package'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Update package
+      tags:
+      - Package
+    post:
+      consumes:
+      - application/json
+      description: Create package
+      parameters:
+      - description: Package
+        in: body
+        name: package
+        required: true
+        schema:
+          $ref: '#/definitions/model.Package'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Package'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Create package
+      tags:
+      - Package
+  /api/v1/package/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete package
+      parameters:
+      - description: Package ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Delete package
+      tags:
+      - Package
+    get:
+      consumes:
+      - application/json
+      description: Get package by id
+      parameters:
+      - description: Package ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Package'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get package by id
+      tags:
+      - Package
+  /api/v1/package/employee/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get packages by employee id
+      parameters:
+      - description: Employee ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Package'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get packages by employee id
+      tags:
+      - Package
+  /api/v1/package/not-delivered:
+    get:
+      consumes:
+      - application/json
+      description: Get not delivered packages
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Package'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get not delivered packages
+      tags:
+      - Package
+  /api/v1/package/receiver/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get packages by receiver id
+      parameters:
+      - description: Receiver ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Package'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get packages by receiver id
+      tags:
+      - Package
+  /api/v1/package/sender/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get packages by sender id
+      parameters:
+      - description: Sender ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Package'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get packages by sender id
+      tags:
+      - Package
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

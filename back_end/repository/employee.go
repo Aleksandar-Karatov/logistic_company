@@ -21,27 +21,27 @@ func NewEmployeeRepository(db *gorm.DB) *EmployeeRepository {
 }
 
 func (e *EmployeeRepository) GetAllEmployees(ctx context.Context, employees *[]model.Employee, limit, offset int) error {
-	return e.db.WithContext(ctx).Model(&model.Employee{}).Limit(limit).Offset(offset).Find(employees).Error
+	return e.db.WithContext(ctx).Preload(clause.Associations).Model(&model.Employee{}).Limit(limit).Offset(offset).Find(employees).Error
 }
 
 func (e *EmployeeRepository) GetEmployeesByName(ctx context.Context, employees *[]model.Employee, name string, limit, offset int) error {
-	return e.db.WithContext(ctx).Model(&model.Employee{}).Limit(limit).Offset(offset).Where("name LIKE '%?%'", name).Find(employees).Error
+	return e.db.WithContext(ctx).Preload(clause.Associations).Model(&model.Employee{}).Limit(limit).Offset(offset).Where("name LIKE '%?%'", name).Find(employees).Error
 }
 
 func (e *EmployeeRepository) GetEmployeesByCompanyID(ctx context.Context, employees *[]model.Employee, id string, limit, offset int) error {
-	return e.db.WithContext(ctx).Model(&model.Employee{}).Limit(limit).Offset(offset).Where("company_id = ?", id).Find(employees).Error
+	return e.db.WithContext(ctx).Preload(clause.Associations).Model(&model.Employee{}).Limit(limit).Offset(offset).Where("company_id = ?", id).Find(employees).Error
 }
 
 func (e *EmployeeRepository) GetEmployeeById(ctx context.Context, employee *model.Employee, id string) error {
-	return e.db.WithContext(ctx).Model(&employee).Where("id = ?", id).Find(employee).Error
+	return e.db.WithContext(ctx).Preload(clause.Associations).Model(&employee).Where("id = ?", id).Find(employee).Error
 }
 
-func (e *EmployeeRepository) CreateEmployee(ctx context.Context, employee *model.Employee) error {
-	return e.db.WithContext(ctx).Model(&employee).Create(employee).Error
+func (e *EmployeeRepository) CreateEmployee(ctx context.Context, employee *model.EmployeeRegister) error {
+	return e.db.WithContext(ctx).Preload(clause.Associations).Model(&employee).Create(employee).Error
 }
 
-func (e *EmployeeRepository) UpdateEmployee(ctx context.Context, employee *model.Employee) error {
-	return e.db.WithContext(ctx).Model(&employee).Updates(employee).Error
+func (e *EmployeeRepository) UpdateEmployee(ctx context.Context, employee *model.EmployeeRegister) error {
+	return e.db.WithContext(ctx).Preload(clause.Associations).Model(&employee).Updates(employee).Error
 }
 
 func (e *EmployeeRepository) DeleteEmployee(ctx context.Context, id string) error {

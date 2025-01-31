@@ -6,6 +6,7 @@ import (
 	"logistic_company/model"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type PackageRepository struct {
@@ -19,19 +20,19 @@ func NewPackageRepository(db *gorm.DB) *PackageRepository {
 }
 
 func (r *PackageRepository) GetAllPackages(ctx context.Context, packages *[]model.Package, limit, offset int) error {
-	return r.db.WithContext(ctx).Offset(offset).Limit(limit).Find(packages).Error
+	return r.db.WithContext(ctx).Preload(clause.Associations).Offset(offset).Limit(limit).Find(packages).Error
 }
 
 func (r *PackageRepository) GetPackagesByCompanyID(ctx context.Context, packages *[]model.Package, id string, limit, offset int) error {
-	return r.db.WithContext(ctx).Where("company_id = ?", id).Offset(offset).Limit(limit).Find(packages).Error
+	return r.db.WithContext(ctx).Preload(clause.Associations).Where("company_id = ?", id).Offset(offset).Limit(limit).Find(packages).Error
 }
 
 func (r *PackageRepository) GetPackagesBySenderID(ctx context.Context, packages *[]model.Package, id string, limit, offset int) error {
-	return r.db.WithContext(ctx).Where("sender_id = ?", id).Offset(offset).Limit(limit).Find(packages).Error
+	return r.db.WithContext(ctx).Preload(clause.Associations).Where("sender_id = ?", id).Offset(offset).Limit(limit).Find(packages).Error
 }
 
 func (r *PackageRepository) GetPackagesByReceiverID(ctx context.Context, packages *[]model.Package, id string, limit, offset int) error {
-	return r.db.WithContext(ctx).Where("receiver_id = ?", id).Offset(offset).Limit(limit).Find(packages).Error
+	return r.db.WithContext(ctx).Preload(clause.Associations).Where("receiver_id = ?", id).Offset(offset).Limit(limit).Find(packages).Error
 }
 
 func (r *PackageRepository) GetPackagesByEmployeeID(ctx context.Context, packages *[]model.Package, id string, limit, offset int) error {
@@ -47,23 +48,23 @@ func (r *PackageRepository) GetPackagesByEmployeeID(ctx context.Context, package
 		filterColumn = "registered_by = ?"
 	}
 
-	return r.db.WithContext(ctx).Where(filterColumn, id).Offset(offset).Limit(limit).Find(packages).Error
+	return r.db.WithContext(ctx).Preload(clause.Associations).Where(filterColumn, id).Offset(offset).Limit(limit).Find(packages).Error
 }
 
 func (r *PackageRepository) GetNotDeliveredPackages(ctx context.Context, packages *[]model.Package, limit, offset int) error {
-	return r.db.WithContext(ctx).Where("delivery_date IS NULL").Offset(offset).Limit(limit).Find(packages).Error
+	return r.db.WithContext(ctx).Preload(clause.Associations).Where("delivery_date IS NULL").Offset(offset).Limit(limit).Find(packages).Error
 }
 
 func (r *PackageRepository) GetPackageById(ctx context.Context, packageModel *model.Package, id string) error {
-	return r.db.WithContext(ctx).Where("id = ?", id).First(packageModel).Error
+	return r.db.WithContext(ctx).Preload(clause.Associations).Where("id = ?", id).First(packageModel).Error
 }
 
 func (r *PackageRepository) CreatePackage(ctx context.Context, packageModel *model.Package) error {
-	return r.db.WithContext(ctx).Model(&packageModel).Create(packageModel).Error
+	return r.db.WithContext(ctx).Preload(clause.Associations).Model(&packageModel).Create(packageModel).Error
 }
 
 func (r *PackageRepository) UpdatePackage(ctx context.Context, packageModel *model.Package) error {
-	return r.db.WithContext(ctx).Model(&packageModel).Updates(packageModel).Error
+	return r.db.WithContext(ctx).Preload(clause.Associations).Model(&packageModel).Updates(packageModel).Error
 }
 
 func (r *PackageRepository) DeletePackage(ctx context.Context, packageModel *model.Package, id string) error {

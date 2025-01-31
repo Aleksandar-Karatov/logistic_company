@@ -1,6 +1,8 @@
 package router
 
 import (
+	"encoding/json"
+	"io"
 	"logistic_company/config"
 	"logistic_company/model"
 	"net/http"
@@ -8,6 +10,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary Get all packages
+// @Description Get all packages
+// @Tags Package
+// @Accept json
+// @Produce json
+// @Param limit query int false "limit"
+// @Param offset query int false "offset"
+// @Success 200 {object} []model.Package
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/package [get]
+// @Security BearerAuth
 func (r *Router) GetAllPackages(c *gin.Context) {
 	limit, offset, err := extractPagination(c)
 	if err != nil {
@@ -23,9 +37,22 @@ func (r *Router) GetAllPackages(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"packages": packages})
+	c.JSON(http.StatusOK, packages)
 }
 
+// @Summary Get packages by sender id
+// @Description Get packages by sender id
+// @Tags Package
+// @Accept json
+// @Produce json
+// @Param id path string true "Sender ID"
+// @Param limit query int false "limit"
+// @Param offset query int false "offset"
+// @Success 200 {object} []model.Package
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/package/sender/{id} [get]
+// @Security BearerAuth
 func (r *Router) GetPackagesBySenderID(c *gin.Context) {
 	contextID, _ := c.Get(config.Id)
 	role, _ := c.Get(config.Role)
@@ -48,9 +75,22 @@ func (r *Router) GetPackagesBySenderID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"packages": packages})
+	c.JSON(http.StatusOK, packages)
 }
 
+// @Summary Get packages by receiver id
+// @Description Get packages by receiver id
+// @Tags Package
+// @Accept json
+// @Produce json
+// @Param id path string true "Receiver ID"
+// @Param limit query int false "limit"
+// @Param offset query int false "offset"
+// @Success 200 {object} []model.Package
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/package/receiver/{id} [get]
+// @Security BearerAuth
 func (r *Router) GetPackagesByReceiverID(c *gin.Context) {
 	contextID, _ := c.Get(config.Id)
 	role, _ := c.Get(config.Role)
@@ -73,9 +113,22 @@ func (r *Router) GetPackagesByReceiverID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"packages": packages})
+	c.JSON(http.StatusOK, packages)
 }
 
+// @Summary Get packages by employee id
+// @Description Get packages by employee id
+// @Tags Package
+// @Accept json
+// @Produce json
+// @Param id path string true "Employee ID"
+// @Param limit query int false "limit"
+// @Param offset query int false "offset"
+// @Success 200 {object} []model.Package
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/package/employee/{id} [get]
+// @Security BearerAuth
 func (r *Router) GetPackagesByEmployeeID(c *gin.Context) {
 	contextID, _ := c.Get(config.Id)
 	role, _ := c.Get(config.Role)
@@ -98,9 +151,21 @@ func (r *Router) GetPackagesByEmployeeID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"packages": packages})
+	c.JSON(http.StatusOK, packages)
 }
 
+// @Summary Get not delivered packages
+// @Description Get not delivered packages
+// @Tags Package
+// @Accept json
+// @Produce json
+// @Param limit query int false "limit"
+// @Param offset query int false "offset"
+// @Success 200 {object} []model.Package
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/package/not-delivered [get]
+// @Security BearerAuth
 func (r *Router) GetNotDeliveredPackages(c *gin.Context) {
 	limit, offset, err := extractPagination(c)
 	if err != nil {
@@ -116,9 +181,20 @@ func (r *Router) GetNotDeliveredPackages(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"packages": packages})
+	c.JSON(http.StatusOK, packages)
 }
 
+// @Summary Get package by id
+// @Description Get package by id
+// @Tags Package
+// @Accept json
+// @Produce json
+// @Param id path string true "Package ID"
+// @Success 200 {object} model.Package
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/package/{id} [get]
+// @Security BearerAuth
 func (r *Router) GetPackageByID(c *gin.Context) {
 	id := c.Param(config.Id)
 
@@ -130,9 +206,20 @@ func (r *Router) GetPackageByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"package": packageModel})
+	c.JSON(http.StatusOK, packageModel)
 }
 
+// @Summary Create package
+// @Description Create package
+// @Tags Package
+// @Accept json
+// @Produce json
+// @Param package body model.Package true "Package"
+// @Success 200 {object} model.Package
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/package [post]
+// @Security BearerAuth
 func (r *Router) CreatePackage(c *gin.Context) {
 	var packageModel model.Package
 	role, _ := c.Get(config.Role)
@@ -166,9 +253,20 @@ func (r *Router) CreatePackage(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"package": packageModel})
+	c.JSON(http.StatusCreated, packageModel)
 }
 
+// @Summary Update package
+// @Description Update package
+// @Tags Package
+// @Accept json
+// @Produce json
+// @Param package body model.Package true "Package"
+// @Success 200 {object} model.Package
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/package [patch]
+// @Security BearerAuth
 func (r *Router) UpdatePackage(c *gin.Context) {
 	var packageModel model.Package
 	role, _ := c.Get(config.Role)
@@ -178,20 +276,38 @@ func (r *Router) UpdatePackage(c *gin.Context) {
 		return
 	}
 
-	if err := c.ShouldBindJSON(&packageModel); err != nil {
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
-	err := r.repository.PackageRepository.UpdatePackage(c.Request.Context(), &packageModel)
+	err = json.Unmarshal(body, &packageModel)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	err = r.repository.PackageRepository.UpdatePackage(c.Request.Context(), &packageModel)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"package": packageModel})
+	c.JSON(http.StatusOK, packageModel)
 }
 
+// @Summary Delete package
+// @Description Delete package
+// @Tags Package
+// @Accept json
+// @Produce json
+// @Param id path string true "Package ID"
+// @Success 200 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/package/{id} [delete]
+// @Security BearerAuth
 func (r *Router) DeletePackage(c *gin.Context) {
 	var packageModel model.Package
 	role, _ := c.Get(config.Role)

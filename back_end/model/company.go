@@ -6,9 +6,9 @@ import (
 )
 
 type Company struct {
-	ID      string  `gorm:"primaryKey;type:varchar(255)"`
-	Name    string  `gorm:"column:company_name;not null;unique;type:varchar(255)"`
-	Revenue float64 `gorm:"column:revenue;not null;type:float(8)"`
+	ID      string  `gorm:"primaryKey;type:varchar(255)" json:"id"`
+	Name    string  `gorm:"column:company_name;not null;unique;type:varchar(255)" json:"name" binding:"required"`
+	Revenue float64 `gorm:"column:revenue;not null;type:float(8)" json:"revenue" binding:"required"`
 }
 
 func (Company) TableName() string {

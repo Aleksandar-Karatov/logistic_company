@@ -6,6 +6,7 @@ import (
 	"logistic_company/model"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type OfficeRepository struct {
@@ -19,19 +20,19 @@ func NewOfficeRepository(db *gorm.DB) *OfficeRepository {
 }
 
 func (o *OfficeRepository) GetAllOffices(ctx context.Context, offices *[]model.Office, limit, offset int) error {
-	return o.db.WithContext(ctx).Offset(offset).Limit(limit).Find(offices).Error
+	return o.db.WithContext(ctx).Preload(clause.Associations).Offset(offset).Limit(limit).Find(offices).Error
 }
 
 func (o *OfficeRepository) GetOfficeById(ctx context.Context, office *model.Office, id string) error {
-	return o.db.WithContext(ctx).Where("id = ?", id).First(office).Error
+	return o.db.WithContext(ctx).Preload(clause.Associations).Where("id = ?", id).First(office).Error
 }
 
 func (o *OfficeRepository) CreateOffice(ctx context.Context, office *model.Office) error {
-	return o.db.WithContext(ctx).Model(&office).Create(office).Error
+	return o.db.WithContext(ctx).Preload(clause.Associations).Model(&office).Create(office).Error
 }
 
 func (o *OfficeRepository) UpdateOffice(ctx context.Context, office *model.Office) error {
-	return o.db.WithContext(ctx).Model(&office).Updates(office).Error
+	return o.db.WithContext(ctx).Preload(clause.Associations).Model(&office).Updates(office).Error
 }
 
 func (o *OfficeRepository) DeleteOffice(ctx context.Context, id string) error {
@@ -83,9 +84,9 @@ func (o *OfficeRepository) reassignEmployees(tx *gorm.DB, id string) error {
 }
 
 func (o *OfficeRepository) GetOfficesByLocation(ctx context.Context, offices *[]model.Office, limit, offset int, location string) error {
-	return o.db.WithContext(ctx).Offset(offset).Limit(limit).Where("location LIKE '%?%'", location).Find(offices).Error
+	return o.db.WithContext(ctx).Preload(clause.Associations).Offset(offset).Limit(limit).Where("location LIKE '%?%'", location).Find(offices).Error
 }
 
 func (o *OfficeRepository) GetOfficesByCompanyID(ctx context.Context, offices *[]model.Office, id string, limit, offset int) error {
-	return o.db.WithContext(ctx).Offset(offset).Limit(limit).Where("company_id = ?", id).Find(offices).Error
+	return o.db.WithContext(ctx).Preload(clause.Associations).Offset(offset).Limit(limit).Where("company_id = ?", id).Find(offices).Error
 }

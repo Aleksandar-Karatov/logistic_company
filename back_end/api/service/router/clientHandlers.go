@@ -1,6 +1,8 @@
 package router
 
 import (
+	"encoding/json"
+	"io"
 	"logistic_company/config"
 	"logistic_company/model"
 	"net/http"
@@ -10,15 +12,13 @@ import (
 
 // @Summary Get all clients
 // @Description Get all clients
+// @Security BearerAuth
 // @Tags Client
 // @Accept json
 // @Produce json
-// @Security BearerAuth
 // @Param limit query int false "limit"
 // @Param offset query int false "offset"
-// @Sequrity in header
-// @Param Authorization header string true "Authorization"
-// @Success 200 {object} gin.H
+// @Success 200 {object} []model.Client
 // @Failure 400 {object} gin.H
 // @Failure 500 {object} gin.H
 // @Router /api/v1/client [get]
@@ -44,7 +44,7 @@ func (r *Router) GetAllClients(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"clients": clients})
+	c.JSON(http.StatusOK, clients)
 }
 
 // @Summary Get clients by company id
@@ -52,14 +52,13 @@ func (r *Router) GetAllClients(c *gin.Context) {
 // @Tags Client
 // @Accept json
 // @Produce json
-// @Security BearerAuth
 // @Param limit query int false "limit"
 // @Param offset query int false "offset"
-// @Param Authorization header string true "Authorization"
-// @Success 200 {object} gin.H
+// @Success 200 {object} []model.Client
 // @Failure 400 {object} gin.H
 // @Failure 500 {object} gin.H
 // @Router /api/v1/client/company/{id} [get]
+// @Security BearerAuth
 func (r *Router) GetClientsByCompanyID(c *gin.Context) {
 	role, _ := c.Get(config.Role)
 	if role != config.RoleAdmin && role != config.RoleEmployee {
@@ -82,7 +81,7 @@ func (r *Router) GetClientsByCompanyID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"clients": clients})
+	c.JSON(http.StatusOK, clients)
 }
 
 // @Summary Get clients by name
@@ -90,14 +89,13 @@ func (r *Router) GetClientsByCompanyID(c *gin.Context) {
 // @Tags Client
 // @Accept json
 // @Produce json
-// @Security BearerAuth
 // @Param limit query int false "limit"
 // @Param offset query int false "offset"
-// @Param Authorization header string true "Authorization"
-// @Success 200 {object} gin.H
+// @Success 200 {object} []model.Client
 // @Failure 400 {object} gin.H
 // @Failure 500 {object} gin.H
 // @Router /api/v1/client/search/{name} [get]
+// @Security BearerAuth
 func (r *Router) GetClientsByName(c *gin.Context) {
 	role, _ := c.Get(config.Role)
 	if role != config.RoleAdmin && role != config.RoleEmployee {
@@ -120,7 +118,7 @@ func (r *Router) GetClientsByName(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"clients": clients})
+	c.JSON(http.StatusOK, clients)
 }
 
 // @Summary Get client by id
@@ -128,13 +126,12 @@ func (r *Router) GetClientsByName(c *gin.Context) {
 // @Tags Client
 // @Accept json
 // @Produce json
-// @Security BearerAuth
-// @Param Authorization header string true "Authorization"
 // @Param id path string true "Client ID"
-// @Success 200 {object} gin.H
+// @Success 200 {object} model.Client
 // @Failure 400 {object} gin.H
 // @Failure 500 {object} gin.H
 // @Router /api/v1/client/{id} [get]
+// @Security BearerAuth
 func (r *Router) GetClientByID(c *gin.Context) {
 	role, _ := c.Get(config.Role)
 	contextID, _ := c.Get(config.Id)
@@ -152,7 +149,7 @@ func (r *Router) GetClientByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"client": client})
+	c.JSON(http.StatusOK, client)
 }
 
 // @Summary Create client
@@ -161,12 +158,12 @@ func (r *Router) GetClientByID(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param client body model.Client true "Client"
-// @Success 201 {object} gin.H
+// @Success 201 {object} model.ClientRegister
 // @Failure 400 {object} gin.H
 // @Failure 500 {object} gin.H
-// @Router /api/v1/client [post]
+// @Router /api/client/register [post]
 func (r *Router) CreateClient(c *gin.Context) {
-	var client model.Client
+	var client model.ClientRegister
 	if err := c.ShouldBindJSON(&client); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
@@ -178,7 +175,7 @@ func (r *Router) CreateClient(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"client": client})
+	c.JSON(http.StatusCreated, client.Client)
 }
 
 // @Summary Update client
@@ -190,10 +187,11 @@ func (r *Router) CreateClient(c *gin.Context) {
 // @Param Authorization header string true "Authorization"
 // @Param id path string true "Client ID"
 // @Param client body model.Client true "Client"
-// @Success 200 {object} gin.H
+// @Success 200 {object} model.Client
 // @Failure 400 {object} gin.H
 // @Failure 500 {object} gin.H
 // @Router /api/v1/client/{id} [patch]
+// @Security BearerAuth
 func (r *Router) UpdateClient(c *gin.Context) {
 	role, _ := c.Get(config.Role)
 	contextID, _ := c.Get(config.Id)
@@ -202,19 +200,25 @@ func (r *Router) UpdateClient(c *gin.Context) {
 		return
 	}
 
-	var client model.Client
-	if err := c.ShouldBindJSON(&client); err != nil {
+	var client model.ClientRegister
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	err = json.Unmarshal(body, &client)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
-	err := r.repository.ClientRepository.UpdateClient(c.Request.Context(), &client)
+	err = r.repository.ClientRepository.UpdateClient(c.Request.Context(), &client)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"client": client})
+	c.JSON(http.StatusOK, client.Client)
 }
 
 // @Summary Delete client
@@ -222,13 +226,12 @@ func (r *Router) UpdateClient(c *gin.Context) {
 // @Tags Client
 // @Accept json
 // @Produce json
-// @Security BearerAuth
-// @Param Authorization header string true "Authorization"
 // @Param id path string true "Client ID"
 // @Success 200 {object} gin.H
 // @Failure 400 {object} gin.H
 // @Failure 500 {object} gin.H
 // @Router /api/v1/client/{id} [delete]
+// @Security BearerAuth
 func (r *Router) DeleteClient(c *gin.Context) {
 	role, _ := c.Get(config.Role)
 	contextID, _ := c.Get(config.Id)

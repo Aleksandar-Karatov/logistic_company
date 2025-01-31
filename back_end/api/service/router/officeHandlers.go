@@ -1,6 +1,8 @@
 package router
 
 import (
+	"encoding/json"
+	"io"
 	"logistic_company/config"
 	"logistic_company/model"
 	"net/http"
@@ -8,6 +10,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary Get all offices
+// @Description Get all offices
+// @Tags Office
+// @Accept json
+// @Produce json
+// @Param limit query int false "limit"
+// @Param offset query int false "offset"
+// @Success 200 {object} []model.Office
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/office [get]
+// @Security BearerAuth
 func (r *Router) GetAllOffices(c *gin.Context) {
 
 	limit, offset, err := extractPagination(c)
@@ -24,9 +38,20 @@ func (r *Router) GetAllOffices(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"offices": offices})
+	c.JSON(http.StatusOK, offices)
 }
 
+// @Summary Get office by id
+// @Description Get office by id
+// @Tags Office
+// @Accept json
+// @Produce json
+// @Param id path string true "Office ID"
+// @Success 200 {object} model.Office
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/office/{id} [get]
+// @Security BearerAuth
 func (r *Router) GetOfficeByID(c *gin.Context) {
 
 	id := c.Param(config.Id)
@@ -40,9 +65,20 @@ func (r *Router) GetOfficeByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"office": office})
+	c.JSON(http.StatusOK, office)
 }
 
+// @Summary Create office
+// @Description Create office
+// @Tags Office
+// @Accept json
+// @Produce json
+// @Param office body model.Office true "Office details"
+// @Success 201 {object} model.Office
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/office [post]
+// @Security BearerAuth
 func (r *Router) CreateOffice(c *gin.Context) {
 	role, _ := c.Get(config.Role)
 	if role != config.RoleAdmin {
@@ -63,9 +99,21 @@ func (r *Router) CreateOffice(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"office": office})
+	c.JSON(http.StatusCreated, office)
 }
 
+// @Summary Update office
+// @Description Update office
+// @Tags Office
+// @Accept json
+// @Produce json
+// @Param id path string true "Office ID"
+// @Param office body model.Office true "Office details"
+// @Success 200 {object} model.Office
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/office/{id} [patch]
+// @Security BearerAuth
 func (r *Router) UpdateOffice(c *gin.Context) {
 	role, _ := c.Get(config.Role)
 	if role != config.RoleAdmin {
@@ -77,21 +125,39 @@ func (r *Router) UpdateOffice(c *gin.Context) {
 
 	var office model.Office
 
-	if err := c.ShouldBindJSON(&office); err != nil {
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	err = json.Unmarshal(body, &office)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
 	office.ID = id
-	err := r.repository.OfficeRepository.UpdateOffice(c.Request.Context(), &office)
+	err = r.repository.OfficeRepository.UpdateOffice(c.Request.Context(), &office)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"office": office})
+	c.JSON(http.StatusOK, office)
 }
 
+// @Summary Delete office
+// @Description Delete office
+// @Tags Office
+// @Accept json
+// @Produce json
+// @Param id path string true "Office ID"
+// @Success 200 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/office/{id} [delete]
+// @Security BearerAuth
 func (r *Router) DeleteOffice(c *gin.Context) {
 	role, _ := c.Get(config.Role)
 	if role != config.RoleAdmin {
@@ -110,6 +176,17 @@ func (r *Router) DeleteOffice(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Office deleted successfully"})
 }
 
+// @Summary Get offices by location
+// @Description Get offices by location
+// @Tags Office
+// @Accept json
+// @Produce json
+// @Param location path string true "Location"
+// @Success 200 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/office/location/{location} [get]
+// @Security BearerAuth
 func (r *Router) GetOfficesByLocation(c *gin.Context) {
 
 	limit, offset, err := extractPagination(c)
@@ -130,6 +207,17 @@ func (r *Router) GetOfficesByLocation(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"offices": offices})
 }
 
+// @Summary Get offices by company id
+// @Description Get offices by company id
+// @Tags Office
+// @Accept json
+// @Produce json
+// @Param id path string true "Company ID"
+// @Success 200 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/office/company/{id} [get]
+// @Security BearerAuth
 func (r *Router) GetOfficesByCompanyID(c *gin.Context) {
 
 	limit, offset, err := extractPagination(c)

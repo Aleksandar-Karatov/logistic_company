@@ -22,23 +22,23 @@ func NewLoginRepository(db *gorm.DB) *LoginRepository {
 }
 
 func (l *LoginRepository) Login(ctx context.Context, email, password string) (string, string, error) {
-	var employee *model.Employee
-	if err := l.db.WithContext(ctx).Model(&model.Employee{}).
+	var employee *model.EmployeeRegister
+	if err := l.db.WithContext(ctx).Model(&model.EmployeeRegister{}).
 		Where("email = ?", email).
 		First(&employee).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return "", "", err
 	}
 	fmt.Println(employee)
-	if employee != nil {
+	if employee.ID != "" {
 		if err := bcrypt.CompareHashAndPassword([]byte(employee.Password), []byte(password)); err != nil {
 			return "", "", errors.New("invalid password")
 		}
 		return employee.ID, employee.Role, nil
 	}
 
-	var client *model.Client
+	var client *model.ClientRegister
 
-	if err := l.db.WithContext(ctx).Model(&model.Client{}).
+	if err := l.db.WithContext(ctx).Model(&model.ClientRegister{}).
 		Where("email = ?", email).
 		First(&client).Error; err != nil {
 		return "", "", err
@@ -46,6 +46,7 @@ func (l *LoginRepository) Login(ctx context.Context, email, password string) (st
 
 	if client != nil {
 		if err := bcrypt.CompareHashAndPassword([]byte(client.Password), []byte(password)); err != nil {
+			fmt.Println(err)
 			return "", "", errors.New("invalid password")
 		}
 		return client.ID, config.RoleClient, nil

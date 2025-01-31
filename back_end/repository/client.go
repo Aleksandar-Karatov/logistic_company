@@ -33,11 +33,11 @@ func (c *ClientRepository) GetClientByID(ctx context.Context, client *model.Clie
 	return c.db.WithContext(ctx).Where("id = ?", id).First(client).Error
 }
 
-func (c *ClientRepository) CreateClient(ctx context.Context, client *model.Client) error {
+func (c *ClientRepository) CreateClient(ctx context.Context, client *model.ClientRegister) error {
 	return c.db.WithContext(ctx).Model(&client).Create(client).Error
 }
 
-func (c *ClientRepository) UpdateClient(ctx context.Context, client *model.Client) error {
+func (c *ClientRepository) UpdateClient(ctx context.Context, client *model.ClientRegister) error {
 	return c.db.WithContext(ctx).Model(&client).Updates(&client).Error
 }
 
