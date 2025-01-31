@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -11,14 +12,14 @@ type EmployeeRegister struct {
 }
 
 type Employee struct {
-	ID        string   `gorm:"primaryKey;type:varchar(255)"`
+	ID        string   `gorm:"primaryKey;type:varchar(255)" json:"id"`
 	Name      string   `gorm:"column:employee_name;not null;unique;type:varchar(255)" json:"name" binding:"required"`
 	Email     string   `gorm:"column:email;not null;unique;type:varchar(255)" json:"email" binding:"required"`
 	Phone     string   `gorm:"column:phone;not null;unique;type:varchar(255)" json:"phone" binding:"required"`
 	Role      string   `gorm:"column:role;not null;type:varchar(255)" json:"role" binding:"required"`
-	CompanyID *string  `gorm:"column:company_id;null;type:varchar(255)" json:"companyID" binding:"required"`
+	CompanyID *string  `gorm:"column:company_id;null;type:varchar(255)" json:"companyId" binding:"required"`
 	Company   *Company `gorm:"foreignKey:CompanyID" json:"company"`
-	OfficeID  *string  `gorm:"column:office_id;type:varchar(255)" json:"officeID"`
+	OfficeID  *string  `gorm:"column:office_id;type:varchar(255)" json:"officeId"`
 	Office    *Office  `gorm:"foreignKey:OfficeID" json:"office"`
 }
 
@@ -31,6 +32,7 @@ func (Employee) TableName() string {
 // plaintext password that was set. This is a security measure to protect
 // the password from being stored in plaintext in the database.
 func (c *EmployeeRegister) BeforeCreate(tx *gorm.DB) (err error) {
+	c.ID = uuid.New().String()
 	bytes, err := bcrypt.GenerateFromPassword([]byte(c.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err

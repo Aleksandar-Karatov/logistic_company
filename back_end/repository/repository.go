@@ -3,9 +3,13 @@ package repository
 import (
 	"logistic_company/config"
 	"logistic_company/model"
+	"time"
 
+	gormlogruslogger "github.com/aklinkert/go-gorm-logrus-logger"
+	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type Repository struct {
@@ -20,8 +24,9 @@ type Repository struct {
 
 func NewRepository(cfg config.Config) (*Repository, error) {
 	dsn := cfg.DBUser + ":" + cfg.DBPassword + "@tcp(" + cfg.DBHost + ":" + cfg.DBPort + ")/" + cfg.DBName
-
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	l := gormlogruslogger.NewGormLogrusLogger(log.WithField("component", "gorm"), 100*time.Millisecond)
+	l.LogMode(logger.Info)
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: l})
 	if err != nil {
 		return nil, err
 	}

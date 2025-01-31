@@ -101,6 +101,46 @@
                 }
             }
         },
+        "/api/logout": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Logs out a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "login"
+                ],
+                "summary": "Logout",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/client": {
             "get": {
                 "security": [
@@ -2167,8 +2207,7 @@
         "model.Company": {
             "type": "object",
             "required": [
-                "name",
-                "revenue"
+                "name"
             ],
             "properties": {
                 "id": {
@@ -2185,7 +2224,7 @@
         "model.Employee": {
             "type": "object",
             "required": [
-                "companyID",
+                "companyId",
                 "email",
                 "name",
                 "phone",
@@ -2195,7 +2234,7 @@
                 "company": {
                     "$ref": "#/definitions/model.Company"
                 },
-                "companyID": {
+                "companyId": {
                     "type": "string"
                 },
                 "email": {
@@ -2210,7 +2249,7 @@
                 "office": {
                     "$ref": "#/definitions/model.Office"
                 },
-                "officeID": {
+                "officeId": {
                     "type": "string"
                 },
                 "phone": {

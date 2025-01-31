@@ -59,7 +59,10 @@ func (r *Router) Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": "Bearer " + tokenString})
+	c.JSON(http.StatusOK, map[string]string{"token": "Bearer " + tokenString,
+		"role":  claims.Role,
+		"email": claims.Email},
+	)
 }
 
 // @Summary Get user info
@@ -82,4 +85,19 @@ func (r *Router) UserInfo(c *gin.Context) {
 		config.Email: email.(string),
 	}
 	c.JSON(http.StatusOK, userInfo)
+}
+
+// @Summary Logout
+// @Description Logs out a user
+// @Tags login
+// @Accept json
+// @Produce json
+// @Success 200 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Failure 401 {object} gin.H
+// @Router /api/logout [post]
+// @Security BearerAuth
+func (r *Router) Logout(c *gin.Context) {
+	c.Header("Authorization", "")
+	c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
 }

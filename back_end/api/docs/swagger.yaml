@@ -50,13 +50,12 @@ definitions:
         type: number
     required:
     - name
-    - revenue
     type: object
   model.Employee:
     properties:
       company:
         $ref: '#/definitions/model.Company'
-      companyID:
+      companyId:
         type: string
       email:
         type: string
@@ -66,14 +65,14 @@ definitions:
         type: string
       office:
         $ref: '#/definitions/model.Office'
-      officeID:
+      officeId:
         type: string
       phone:
         type: string
       role:
         type: string
     required:
-    - companyID
+    - companyId
     - email
     - name
     - phone
@@ -224,6 +223,31 @@ paths:
           schema:
             $ref: '#/definitions/gin.H'
       summary: Login
+      tags:
+      - login
+  /api/logout:
+    post:
+      consumes:
+      - application/json
+      description: Logs out a user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Logout
       tags:
       - login
   /api/v1/client:

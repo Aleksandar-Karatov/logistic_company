@@ -12,11 +12,10 @@ type ClientRegister struct {
 }
 
 type Client struct {
-	ID               string `gorm:"primaryKey;type:varchar(255)" json:"id"`
-	Name             string `gorm:"column:client_name;not null;unique;type:varchar(255)" json:"name" binding:"required"`
-	Email            string `gorm:"column:email;not null;unique;type:varchar(255)" json:"email" binding:"required"`
-	Phone            string `gorm:"column:phone;not null;unique;type:varchar(255)" json:"phone" binding:"required"`
-	FavoriteOfficeID string `gorm:"column:favorite_office_id;not null;unique;type:varchar(255)" json:"favoriteOfficeID"`
+	ID    string `gorm:"primaryKey;type:varchar(255)" json:"id"`
+	Name  string `gorm:"column:client_name;not null;unique;type:varchar(255)" json:"name" binding:"required"`
+	Email string `gorm:"column:email;not null;unique;type:varchar(255)" json:"email" binding:"required"`
+	Phone string `gorm:"column:phone;not null;unique;type:varchar(255)" json:"phone" binding:"required"`
 }
 
 func (Client) TableName() string {

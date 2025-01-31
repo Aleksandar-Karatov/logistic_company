@@ -5,7 +5,8 @@ import (
 	"logistic_company/api/service/auth"
 	"logistic_company/config"
 	"logistic_company/repository"
-	"github.com/rs/cors"
+
+	"github.com/gin-contrib/cors"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -29,10 +30,25 @@ func NewRouter(repository *repository.Repository, cfg *config.Config) (r *Router
 }
 
 func (r *Router) InitializeRoutes() {
+	c := cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},                            // Or your frontend URL(s)
+		AllowMethods:     []string{"POST", "GET", "PUT", "PATCH", "DELETE", "OPTIONS"}, // Allowed methods
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},          // Allowed headers
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true, // If you need credentials (cookies, authorization headers)
+		AllowOriginFunc: func(origin string) bool {
+			// Add custom logic here if you need it
+			return origin == "http://localhost:3000"
+		},
+		// MaxAge: 12 * time.Hour, // Optional
+	})
+	r.ginEngine.Use(c)
+
 	r.ginEngine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	api := r.ginEngine.Group("/api")
 	{
 		api.POST("/login", r.Login)
+		api.POST("/logout", r.Logout)
 		api.POST("/client/register", r.CreateClient)
 		v1 := api.Group("/v1", auth.JWTMiddleware(r.repository, r.secretKey))
 		{
@@ -99,19 +115,4 @@ func (r *Router) InitializeRoutes() {
 
 func (r *Router) Run() error {
 	return r.ginEngine.Run(r.cfg.APIhost + ":" + r.cfg.APIport)
-}
-func CORSMiddleware() gin.HandlerFunc {
-    return func(c *gin.Context) {
-        c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-        c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-        c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-        c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
-
-        if c.Request.Method == "OPTIONS" {
-            c.AbortWithStatus(204)
-            return
-        }
-
-        c.Next()
-    }
 }

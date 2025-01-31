@@ -1,61 +1,31 @@
-// src/components/CreateClientForm.js
-import React, { useState, useEffect } from 'react'; // Add useEffect here
-import { Form, Button, Container, Alert, Spinner } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import {getApiUrl, getAuthHeaders } from './utils';
+import React, { useState } from 'react';
+import { Form, Button, Alert } from 'react-bootstrap';
+import { getApiUrl, getAuthHeaders } from './utils';
 
-function CreateClientForm({ companies }) {
-    const navigate = useNavigate();
-    const [client, setClient] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        companyId: '',
-    });
-    const [loading, setLoading] = useState(false);
+function CreateClientForm() { // Removed companies and offices props
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
-    const [companiesData, setCompaniesData] = useState(companies || []);
-    const apiUrl = getApiUrl();  // Call the utility function
+    const [success, setSuccess] = useState(false);
+    const apiUrl = getApiUrl();
 
-    useEffect(() => {
-        if (!companies) {
-            const fetchCompanies = async () => {
-                try {
-                    const response = await fetch(`${apiUrl}/api/v1/company`, { headers: getAuthHeaders() });
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-                    }
-                    const data = await response.json();
-                    setCompaniesData(data);
-                } catch (err) {
-                    setError(err.message);
-                }
-            };
-
-            fetchCompanies();
-        } else {
-            setCompaniesData(companies);
-        }
-    }, [companies, apiUrl]);
-
-    const handleChange = (e) => {
-        setClient({ ...client, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+    const handleSubmit = async (event) => {
+        event.preventDefault();
         setError(null);
+        setSuccess(false);
 
         try {
-            const response = await fetch(`${apiUrl}/api/v1/client/register`, { // Use the correct endpoint for client registration
+            const response = await fetch(`${apiUrl}/api/client/register`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...getAuthHeaders()
-                },
-                body: JSON.stringify(client),
+                headers: getAuthHeaders(),
+                body: JSON.stringify({
+                    name,
+                    email,
+                    phone,
+                    password,
+                }),
             });
 
             if (!response.ok) {
@@ -63,50 +33,71 @@ function CreateClientForm({ companies }) {
                 throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
             }
 
-            navigate('/clients'); // Redirect on success
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
+            setSuccess(true);
+            setName('');
+            setEmail('');
+            setPhone('');
+            setPassword('');
+        } catch (error) {
+            console.error("Error creating client:", error);
+            setError(error.message);
         }
     };
 
     return (
-        <Container>
-            <h2>Create Client</h2>
-            {loading && <Spinner animation="border" />}
+        <Form onSubmit={handleSubmit}>
             {error && <Alert variant="danger">{error}</Alert>}
-            <Form onSubmit={handleSubmit}>
-                <Form.Group controlId="name">
-                    <Form.Label>Name</Form.Label>
-                    <Form.Control type="text" name="name" value={client.name} onChange={handleChange} required />
-                </Form.Group>
+            {success && <Alert variant="success">Client created successfully!</Alert>}
 
-                <Form.Group controlId="email">
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control type="email" name="email" value={client.email} onChange={handleChange} required />
-                </Form.Group>
+            <Form.Group controlId="name">
+                <Form.Label>Name</Form.Label>
+                <Form.Control
+                    type="text"
+                    placeholder="Enter name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                />
+            </Form.Group>
 
-                <Form.Group controlId="phone">
-                    <Form.Label>Phone</Form.Label>
-                    <Form.Control type="text" name="phone" value={client.phone} onChange={handleChange} required />
-                </Form.Group>
+            <Form.Group controlId="email">
+                <Form.Label>Email</Form.Label>
+                <Form.Control
+                    type="email"
+                    placeholder="Enter email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                />
+            </Form.Group>
 
-                <Form.Group controlId="company">
-                    <Form.Label>Company</Form.Label>
-                    <Form.Control as="select" name="companyId" value={client.companyId} onChange={handleChange} required>
-                        <option value="">Select Company</option>
-                        {companiesData.map(company => (
-                            <option key={company.id} value={company.id}>{company.name}</option>
-                        ))}
-                    </Form.Control>
-                </Form.Group>
+            <Form.Group controlId="phone">
+                <Form.Label>Phone</Form.Label>
+                <Form.Control
+                    type="tel"
+                    placeholder="Enter phone"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    required
+                />
+            </Form.Group>
 
-                <Button variant="primary" type="submit" disabled={loading}>
-                    {loading ? "Creating..." : "Create"}
-                </Button>
-            </Form>
-        </Container>
+
+            <Form.Group controlId="password">
+                <Form.Label>Password</Form.Label>
+                <Form.Control
+                    type="password"
+                    placeholder="Enter password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                />
+            </Form.Group>
+
+            <Button variant="primary" type="submit">
+                Create Client
+            </Button>
+        </Form>
     );
 }
 

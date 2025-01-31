@@ -107,6 +107,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/logout": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Logs out a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "login"
+                ],
+                "summary": "Logout",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/client": {
             "get": {
                 "security": [
@@ -2173,8 +2213,7 @@ const docTemplate = `{
         "model.Company": {
             "type": "object",
             "required": [
-                "name",
-                "revenue"
+                "name"
             ],
             "properties": {
                 "id": {
@@ -2191,7 +2230,7 @@ const docTemplate = `{
         "model.Employee": {
             "type": "object",
             "required": [
-                "companyID",
+                "companyId",
                 "email",
                 "name",
                 "phone",
@@ -2201,7 +2240,7 @@ const docTemplate = `{
                 "company": {
                     "$ref": "#/definitions/model.Company"
                 },
-                "companyID": {
+                "companyId": {
                     "type": "string"
                 },
                 "email": {
@@ -2216,7 +2255,7 @@ const docTemplate = `{
                 "office": {
                     "$ref": "#/definitions/model.Office"
                 },
-                "officeID": {
+                "officeId": {
                     "type": "string"
                 },
                 "phone": {

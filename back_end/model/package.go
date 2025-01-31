@@ -9,7 +9,7 @@ import (
 
 type Package struct {
 	ID                  string     `gorm:"primaryKey;type:varchar(255)" json:"id"`
-	SenderID            string     `gorm:"column:client_id;not null;type:varchar(255)" json:"senderID" binding:"required"`
+	SenderID            string     `gorm:"column:sender_id;not null;type:varchar(255)" json:"senderID" binding:"required"`
 	Sender              *Client    `gorm:"foreignKey:SenderID" json:"sender"`
 	ReceiverID          string     `gorm:"column:receiver_id;not null;type:varchar(255)" json:"receiverID" binding:"required"`
 	Receiver            *Client    `gorm:"foreignKey:ReceiverID" json:"receiver"`

@@ -1,71 +1,119 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Spinner, Alert } from 'react-bootstrap';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Table, Spinner, Alert, Button } from 'react-bootstrap';
 import { getApiUrl, getAuthHeaders } from './utils';
 
-function PackageList({ userRole }) {
-    const [packages, setPackages] = useState([]);
+function PackageList({ packages: initialPackages }) {
+    const [packages, setPackages] = useState(initialPackages || []);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
     const apiUrl = getApiUrl();
-    useEffect(() => {
-        const fetchPackages = async () => {
-            try {
-                const response = await fetch(`${apiUrl}/api/v1/package`, { headers: getAuthHeaders() }); // Fetch all packages
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                setPackages(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
 
+    const fetchPackages = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(`${apiUrl}/api/v1/package`, { headers: getAuthHeaders() });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+            }
+            const packagesData = await response.json();
+
+            const remappedPackages = packagesData.map(pkg => ({
+                id: pkg.id,
+                senderID: pkg.sender_id,
+                sender: pkg.sender,
+                receiverID: pkg.receiver_id,
+                receiver: pkg.receiver,
+                weight: pkg.weight,
+                price: pkg.price, // Price is here
+                isDeliveredToOffice: pkg.is_delivered_to_office,
+                deliveryStatus: pkg.delivery_status,
+                deliveryDate: pkg.delivery_date, // Delivery date is here
+                registeredByID: pkg.registered_by,
+                registeredBy: pkg.registered_by_navigation,
+                courrierID: pkg.courrier_id,
+                courrier: pkg.courrier_navigation,
+                officeAcceptedAtID: pkg.office_accepted_at,
+                officeAcceptedAt: pkg.office_accepted_at_navigation,
+                deliveryLocation: pkg.delivery_location,
+                officeDeliveredAtID: pkg.office_delivered_at,
+                officeDeliveredAt: pkg.office_delivered_at_navigation,
+                companyID: pkg.company_id,
+                company: pkg.company_navigation,
+            }));
+
+            setPackages(remappedPackages);
+
+        } catch (error) {
+            console.error("Error fetching packages:", error);
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
+    }, [apiUrl]);
+
+    useEffect(() => {
         fetchPackages();
-    }, [apiUrl]); // Fetch packages once on component mount
+    }, [fetchPackages, refreshTrigger]);
+
+    const handleRefreshClick = () => {
+        setRefreshTrigger(prev => prev + 1);
+    };
 
     if (loading) {
         return <div className="d-flex justify-content-center"><Spinner animation="border" /></div>;
     }
 
     if (error) {
-        return <Alert variant="danger">{error}</Alert>;
+        return (
+            <>
+                <Alert variant="danger">{error}</Alert>
+                <Button onClick={handleRefreshClick}>Refresh Packages</Button>
+            </>
+        );
     }
 
     return (
         <div>
-            <h2>Package List</h2>
-            {packages.length > 0 ? (
-                <Table striped bordered hover responsive>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Weight</th>
-                            <th>Sender</th>
-                            <th>Receiver</th>
-                            <th>Delivery Address</th>
-                            {/* Add other relevant columns */}
+            <Table striped bordered hover>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Sender</th>
+                        <th>Receiver</th>
+                        <th>Weight</th>
+                        <th>Price</th> {/* Price column is here */}
+                        <th>Delivery Status</th>
+                        <th>Delivery Date</th> {/* Delivery Date column is here */}
+                        <th>Delivery Location</th>
+                        <th>Courier</th>
+                        <th>Office Accepted At</th>
+                        <th>Office Delivered At</th>
+                        <th>Company</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {packages.map((pkg) => (
+                        <tr key={pkg.id}>
+                            <td>{pkg.id}</td>
+                            <td>{pkg.sender?.name}</td>
+                            <td>{pkg.receiver?.name}</td>
+                            <td>{pkg.weight}</td>
+                            <td>{pkg.price}</td> {/* Price cell is here */}
+                            <td>{pkg.deliveryStatus}</td>
+                            <td>{pkg.deliveryDate}</td> {/* Delivery Date cell is here */}
+                            <td>{pkg.deliveryLocation}</td>
+                            <td>{pkg.courrier?.name}</td>
+                            <td>{pkg.officeAcceptedAt?.location}</td>
+                            <td>{pkg.officeDeliveredAt?.location}</td>
+                            <td>{pkg.company?.name}</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {packages.map(pkg => (
-                            <tr key={pkg.id}>
-                                <td>{pkg.id}</td>
-                                <td>{pkg.weight}</td>
-                                <td>{pkg.sender?.name}</td>
-                                <td>{pkg.receiver?.name}</td>
-                                <td>{pkg.deliveryAddress}</td>
-                                {/* Add other table cells */}
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
-            ) : (
-                <p>No packages found.</p>
-            )}
+                    ))}
+                </tbody>
+            </Table>
+            <Button onClick={handleRefreshClick}>Refresh Packages</Button>
         </div>
     );
 }

@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 // @Summary Get all packages
@@ -230,6 +231,7 @@ func (r *Router) CreatePackage(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&packageModel); err != nil {
+		log.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
@@ -244,7 +246,6 @@ func (r *Router) CreatePackage(c *gin.Context) {
 		packageModel.Price = config.DeliveryToAddressPricePerKillogram
 	}
 
-	packageModel.DeliveryStatus = "created"
 	packageModel.Price *= packageModel.Weight
 
 	err := r.repository.PackageRepository.CreatePackage(c.Request.Context(), &packageModel)
