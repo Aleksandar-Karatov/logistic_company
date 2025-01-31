@@ -42,7 +42,7 @@ func (r *PackageRepository) GetPackagesByEmployeeID(ctx context.Context, package
 		return err
 	}
 	filterColumn := ""
-	if employeeRole == config.RoleCourrier {
+	if employeeRole == config.RoleCourier {
 		filterColumn = "courrier_id = ?"
 	} else {
 		filterColumn = "registered_by = ?"

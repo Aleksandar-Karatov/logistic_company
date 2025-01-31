@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Spinner, Alert } from 'react-bootstrap';
 import { AuthProvider } from './components/authContext';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route,Navigate  } from 'react-router-dom';
 import CompanyList from './components/CompanyList';
 import CreateClientForm from './components/CreateClientForm';
 import CreateEmployeeForm from './components/CreateEmployeeForm';
@@ -107,57 +107,39 @@ function App() {
                 <Container>
                     <Routes>
                         <Route path="/login" element={<LoginForm />} />
-                        <Route path="/" element={
-                            <PrivateRoute isAuthenticated={isAuthenticated}>
-                                {userRole === 'admin' ? (
-                                    <PackageList userRole={userRole} />
-                                ) : userRole === 'employee' ? (
-                                    <PackageList userRole={userRole} />
-                                ) : userRole === 'client' ? (
-                                    <ClientPackageTables userRole={userRole} userId={userId} />
-                                ) : null}
-                            </PrivateRoute>
-                        } />
 
+                        {/* General/Shared Routes (Accessible to all authenticated users) */}
+                        <Route path="/" element={<Navigate to="/packages" />} /> {/* Redirect to /packages */}
                         <Route path="/packages" element={
                             <PrivateRoute isAuthenticated={isAuthenticated}>
-                                {userRole === 'admin' ? (
-                                    <PackageList userRole={userRole} />
-                                ) : userRole === 'employee' ? (
-                                    <PackageList userRole={userRole} />
-                                ) : userRole === 'client' ? (
-                                    <ClientPackageTables userRole={userRole} userId={userId} />
-                                ) : null}
+                                <PackageList userRole={userRole} />
                             </PrivateRoute>
                         } />
 
                         {/* Admin Routes */}
-                        {userRole === 'admin' && (
-                            <>
-                                <Route path="/companies" element={<PrivateRoute><CompanyList companies={companies} userRole={userRole} /></PrivateRoute>} />
-                                <Route path="/create-company" element={<PrivateRoute><CreateCompanyForm /></PrivateRoute>} />
-                                <Route path="/company/:companyId/employees" element={<PrivateRoute><EmployeeListByCompany /></PrivateRoute>} />
-                                <Route path="/employees" element={<PrivateRoute><EmployeeList userRole={userRole} /></PrivateRoute>} />
-                                <Route path="/create-employee" element={<PrivateRoute><CreateEmployeeForm companies={companies} offices={offices} /></PrivateRoute>} />
-                                <Route path="/offices" element={<PrivateRoute><OfficeList offices={offices} /></PrivateRoute>} />
-                                <Route path="/create-office" element={<PrivateRoute><CreateOfficeForm companies={companies} /></PrivateRoute>} />
-                                <Route path="/clients" element={<PrivateRoute><ClientList clients={clients} /></PrivateRoute>} />
-                                <Route path="/create-client" element={<PrivateRoute><CreateClientForm companies={companies} /></PrivateRoute>} />
-                            </>
-                        )}
+                        <Route element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={['admin']} />}>
+                            <Route path="/companies" element={<CompanyList companies={companies} userRole={userRole} />} />
+                            <Route path="/create-company" element={<CreateCompanyForm />} />
+                            <Route path="/company/:companyId/employees" element={<EmployeeListByCompany />} />
+                            <Route path="/employees" element={<EmployeeList userRole={userRole} />} />
+                            <Route path="/create-employee" element={<CreateEmployeeForm companies={companies} offices={offices} />} />
+                            <Route path="/offices" element={<OfficeList offices={offices} />} />
+                            <Route path="/create-office" element={<CreateOfficeForm companies={companies} />} />
+                            <Route path="/clients" element={<ClientList clients={clients} />} />
+                            <Route path="/create-client" element={<CreateClientForm companies={companies} />} />
+                        </Route>
 
                         {/* Employee Routes */}
-                        {userRole === 'employee' && (
-                            <>
-                                <Route path="/employees" element={<PrivateRoute><EmployeeList userRole={userRole} /></PrivateRoute>} />
-                            </>
-                        )}
+                        <Route element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={['employee']} />}>
+                            <Route path="/create-package" element={<CreatePackageForm companies={companies} clients={clients} offices={offices} employees={employees} />} />
+                            <Route path="/employees" element={<EmployeeList userRole={userRole} />} /> {/* Keep this if employees can see other employees */}
+                        </Route>
 
-                        <Route path="/create-package" element={
-                            <PrivateRoute isAuthenticated={isAuthenticated}>
-                                <CreatePackageForm companies={companies} clients={clients} offices={offices} employees={employees} />
-                            </PrivateRoute>
-                        } />
+                        {/* Client Routes */}
+                        <Route element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={['client']} />}>
+                            <Route path="/client-packages" element={<ClientPackageTables userRole={userRole} userId={userId} />} /> {/* More descriptive path */}
+                        </Route>
+
                     </Routes>
                 </Container>
             </BrowserRouter>

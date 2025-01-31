@@ -98,7 +98,7 @@ func (e *EmployeeRepository) reassignCourrierPackages(tx *gorm.DB, employee *mod
 	}
 
 	columnToUpdate := ""
-	if employee.Role == config.RoleCourrier {
+	if employee.Role == config.RoleCourier {
 		columnToUpdate = "courrier_id"
 	} else {
 		columnToUpdate = "registered_by"

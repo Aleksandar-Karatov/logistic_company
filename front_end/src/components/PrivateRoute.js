@@ -2,11 +2,15 @@ import React, { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
 import AuthContext from './authContext';
 
-const PrivateRoute = ({ children, isAuthenticated }) => { // Accept isAuthenticated as a prop
-    const { isLoggedIn } = useContext(AuthContext); // Or use the context if you prefer
+const PrivateRoute = ({ children, allowedRoles }) => {
+    const { isLoggedIn, userRole } = useContext(AuthContext);
 
-    if (!isAuthenticated && !isLoggedIn) { // Check both props and context
+    if (!isLoggedIn) {
         return <Navigate to="/login" />;
+    }
+
+    if (allowedRoles && !allowedRoles.includes(userRole)) {
+        return <div>You do not have permission to access this page.</div>; // Or redirect
     }
 
     return children;

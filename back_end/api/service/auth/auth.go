@@ -69,7 +69,7 @@ func JWTMiddleware(repos *repository.Repository, secretKey []byte) gin.HandlerFu
 			c.Set(config.Id, client.ID)
 			c.Set(config.Role, config.RoleClient)
 			c.Set(config.Email, client.Email)
-		} else if claims.Role == config.RoleEmployee || claims.Role == config.RoleAdmin || claims.Role == config.RoleCourrier {
+		} else if claims.Role == config.RoleEmployee || claims.Role == config.RoleAdmin || claims.Role == config.RoleCourier {
 			var employee model.Employee
 			err := repos.EmployeeRepository.GetEmployeeById(c.Request.Context(), &employee, claims.ID)
 			if err != nil {

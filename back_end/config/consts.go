@@ -6,7 +6,7 @@ const (
 	Email        = "email"
 	RoleClient   = "client"
 	RoleEmployee = "employee"
-	RoleCourrier = "courrier"
+	RoleCourier  = "courier"
 	RoleAdmin    = "admin"
 
 	DeliveryToOfficePricePerKillogram  = 4.99
