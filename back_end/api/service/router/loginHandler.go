@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"logistic_company/api/service/auth"
+	"logistic_company/config"
 	"logistic_company/model"
 
 	"github.com/gin-gonic/gin"
@@ -59,4 +60,26 @@ func (r *Router) Login(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"token": "Bearer " + tokenString})
+}
+
+// @Summary Get user info
+// @Description Get user info
+// @Tags login
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} gin.H
+// @Failure 401 {object} gin.H
+// @Router /api/v1/user-info [get]
+// @Security BearerAuth
+func (r *Router) UserInfo(c *gin.Context) {
+	role, _ := c.Get(config.Role)
+	id, _ := c.Get(config.Id)
+	email, _ := c.Get(config.Email)
+	userInfo := map[string]string{
+		config.Role:  role.(string),
+		config.Id:    id.(string),
+		config.Email: email.(string),
+	}
+	c.JSON(http.StatusOK, userInfo)
 }

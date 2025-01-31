@@ -1473,6 +1473,33 @@ paths:
       summary: Get packages by sender id
       tags:
       - Package
+  /api/v1/user-info:
+    get:
+      consumes:
+      - application/json
+      description: Get user info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Get user info
+      tags:
+      - login
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and JWT token.

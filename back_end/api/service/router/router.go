@@ -5,6 +5,7 @@ import (
 	"logistic_company/api/service/auth"
 	"logistic_company/config"
 	"logistic_company/repository"
+	"github.com/rs/cors"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -33,9 +34,9 @@ func (r *Router) InitializeRoutes() {
 	{
 		api.POST("/login", r.Login)
 		api.POST("/client/register", r.CreateClient)
-		v1 := api.Group("/v1")
+		v1 := api.Group("/v1", auth.JWTMiddleware(r.repository, r.secretKey))
 		{
-			v1.Use(auth.JWTMiddleware(r.repository, r.secretKey))
+			v1.GET("/user-info", r.UserInfo)
 			companyApi := v1.Group("/company")
 			{
 				companyApi.GET("", r.GetAllCompanies)
@@ -98,4 +99,19 @@ func (r *Router) InitializeRoutes() {
 
 func (r *Router) Run() error {
 	return r.ginEngine.Run(r.cfg.APIhost + ":" + r.cfg.APIport)
+}
+func CORSMiddleware() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+        c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+        c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+        c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+        if c.Request.Method == "OPTIONS" {
+            c.AbortWithStatus(204)
+            return
+        }
+
+        c.Next()
+    }
 }
