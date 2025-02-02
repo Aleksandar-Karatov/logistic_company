@@ -1,4 +1,3 @@
-// src/components/CreateOfficeForm.js
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Container, Alert, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -60,7 +59,7 @@ function CreateOfficeForm({ companies }) {
                 throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
             }
 
-            navigate('/offices'); // Redirect on success
+            navigate('/offices');
         } catch (err) {
             setError(err.message);
         } finally {

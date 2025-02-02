@@ -15,18 +15,18 @@ function OfficeList({ offices: initialOffices }) {
         try {
             const response = await fetch(`${apiUrl}/api/v1/office`, { headers: getAuthHeaders() });
             if (!response.ok) {
-                const errorData = await response.json(); // Try to parse error details
+                const errorData = await response.json(); 
                 throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
             }
             const officesData = await response.json();
             const officesWithStringIds = officesData.map(office => ({
                 ...office,
-                id: String(office.id), // Convert ID to string
+                id: String(office.id), 
             }));
             setOffices(officesWithStringIds);
         } catch (error) {
             console.error("Error fetching offices:", error);
-            setError(error.message); // Set the error message for display
+            setError(error.message); 
         } finally {
             setLoading(false);
         }
@@ -34,7 +34,7 @@ function OfficeList({ offices: initialOffices }) {
 
     useEffect(() => {
         fetchOffices();
-    }, [fetchOffices, refreshTrigger]); // refreshTrigger is a dependency now
+    }, [fetchOffices, refreshTrigger]); 
 
     const handleRefreshClick = () => {
         setRefreshTrigger(prev => prev + 1);

@@ -1,46 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Table, Spinner, Alert } from 'react-bootstrap';
 import { getApiUrl, getAuthHeaders } from './utils';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
-function CompanyList({ companies, userRole }) { // Add userRole prop
-    const [companyList, setCompanyList] = useState(companies || []);
+function CompanyList({ userRole }) {
+    const [companyList, setCompanyList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const apiUrl = getApiUrl();
-    const navigate = useNavigate(); // Initialize useNavigate
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchCompanies = async () => {
-            setLoading(true);
-            setError(null);
+    const fetchCompanies = useCallback(async () => {
+        setLoading(true);
+        setError(null);
 
-            try {
-                const response = await fetch(`${apiUrl}/api/v1/company`, {
-                    headers: getAuthHeaders(),
-                });
+        try {
+            const response = await fetch(`${apiUrl}/api/v1/company`, {
+                headers: getAuthHeaders(),
+            });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                setCompanyList(data);
-            } catch (error) {
-                console.error("Error fetching companies:", error);
-                setError(error.message);
-            } finally {
-                setLoading(false);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
             }
-        };
 
-        if (!companies) {
-            fetchCompanies();
-        } else {
+            const data = await response.json();
+            setCompanyList(data);
+        } catch (error) {
+            console.error("Error fetching companies:", error);
+            setError(error.message);
+        } finally {
             setLoading(false);
         }
-    }, [apiUrl, companies]);
+    }, [apiUrl]);
+
+    useEffect(() => {
+        fetchCompanies();
+    }, [fetchCompanies]);
+
+    const handleRefresh = () => {
+        fetchCompanies();
+    };
 
     if (loading) {
         return (
@@ -54,27 +54,33 @@ function CompanyList({ companies, userRole }) { // Add userRole prop
         return <Alert variant="danger">{error}</Alert>;
     }
 
-    // Conditionally render the table only for admin
     if (userRole === 'admin') {
         return (
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        {/* Add other table headers as needed */}
-                    </tr>
-                </thead>
-                <tbody>
-                    {companyList.map((company) => (
-                        <tr key={company.id} onClick={() => navigate(`/company/${company.id}/employees`)} style={{ cursor: 'pointer' }}> {/* Make row clickable */}
-                            <td>{company.id}</td>
-                            <td>{company.name}</td>
-                            {/* Add other table cells as needed */}
+            <div>
+                <button onClick={handleRefresh} className="btn btn-primary mb-3">Refresh</button>
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            {}
                         </tr>
-                    ))}
-                </tbody>
-            </Table>
+                    </thead>
+                    <tbody>
+                        {companyList.map((company) => (
+                            <tr
+                                key={company.id}
+                                onClick={() => navigate(`/company/${company.id}/employees`)}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                <td>{company.id}</td>
+                                <td>{company.name}</td>
+                                {}
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+            </div>
         );
     } else {
         return <Alert variant="info">This list is only accessible to administrators.</Alert>;

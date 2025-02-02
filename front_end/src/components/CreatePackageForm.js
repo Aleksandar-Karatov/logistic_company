@@ -1,4 +1,3 @@
-// CreatePackageForm.js (Child Component)
 import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { getApiUrl, getAuthHeaders } from './utils';

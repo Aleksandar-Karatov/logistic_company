@@ -1388,7 +1388,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/gin.H"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Office"
+                            }
                         }
                     },
                     "400": {
@@ -1437,7 +1440,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/gin.H"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Office"
+                            }
                         }
                     },
                     "400": {
@@ -2167,9 +2173,6 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
-                "favoriteOfficeID": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
@@ -2191,9 +2194,6 @@ const docTemplate = `{
             ],
             "properties": {
                 "email": {
-                    "type": "string"
-                },
-                "favoriteOfficeID": {
                     "type": "string"
                 },
                 "id": {

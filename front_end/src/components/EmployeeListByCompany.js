@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Table, Spinner, Alert, Button } from 'react-bootstrap'; // Import Button
+import { Table, Spinner, Alert, Button } from 'react-bootstrap'; 
 import { getApiUrl, getAuthHeaders } from './utils';
 
 function EmployeeListByCompany() {
-    const { id: companyId } = useParams(); // Rename companyId to id to match your route parameter
+    const { id: companyId } = useParams(); 
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -17,7 +17,7 @@ function EmployeeListByCompany() {
             setError(null);
 
             try {
-                const response = await fetch(`${apiUrl}/api/v1/employee/company/${companyId}`, { // Updated API endpoint
+                const response = await fetch(`${apiUrl}/api/v1/employee/company/${companyId}`, { 
                     headers: getAuthHeaders(),
                 });
 
@@ -37,7 +37,7 @@ function EmployeeListByCompany() {
         };
 
         fetchEmployees();
-    }, [companyId, apiUrl]); // Add companyId and apiUrl to dependency array
+    }, [companyId, apiUrl]); 
 
     if (loading) {
         return (
@@ -59,20 +59,20 @@ function EmployeeListByCompany() {
                     <tr>
                         <th>ID</th>
                         <th>Name</th>
-                        {/* Add other employee table headers as needed */}
+                        {}
                     </tr>
                 </thead>
                 <tbody>
                     {employees.map((employee) => (
-                        <tr key={employee.id}> {/* Make sure each row has a unique key */}
+                        <tr key={employee.id}> {}
                             <td>{employee.id}</td>
                             <td>{employee.name}</td>
-                            {/* Add other table cells as needed */}
+                            {}
                         </tr>
                     ))}
                 </tbody>
             </Table>
-            <Button onClick={() => navigate(-1)}>Go Back</Button> {/* Add a "Go Back" button */}
+            <Button onClick={() => navigate(-1)}>Go Back</Button> {}
         </div>
     );
 }

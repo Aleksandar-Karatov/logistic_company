@@ -29,7 +29,7 @@ function EmployeeList({ userRole }) {
         } finally {
             setLoading(false);
         }
-    }, [apiUrl]);  // getAuthHeaders removed from dependency array
+    }, [apiUrl]); 
 
     useEffect(() => {
         if (userRole === 'admin' || userRole === 'employee') {

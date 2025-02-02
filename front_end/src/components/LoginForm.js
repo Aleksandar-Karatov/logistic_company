@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { getApiUrl } from './utils';
-import AuthContext from './authContext'; // Import the AuthContext
+import AuthContext from './authContext'; 
 
 function LoginForm() {
     const [email, setEmail] = useState('');
@@ -10,11 +10,11 @@ function LoginForm() {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const apiUrl = getApiUrl();
-    const { login } = useContext(AuthContext); // Access the login function from the context
+    const { login } = useContext(AuthContext); 
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        setError(null); // Clear any previous errors
+        setError(null); 
 
         try {
             const response = await fetch(`${apiUrl}/api/login`, {
@@ -30,10 +30,10 @@ function LoginForm() {
                 throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json(); // Get the token, role, and email
+            const data = await response.json(); 
 
-            login(data); // Update the context using the login function
-            navigate('/'); // Redirect after login
+            login(data); 
+            navigate('/'); 
 
         } catch (err) {
             setError(err.message);

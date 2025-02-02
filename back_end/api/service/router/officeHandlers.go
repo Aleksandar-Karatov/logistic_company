@@ -182,7 +182,7 @@ func (r *Router) DeleteOffice(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param location path string true "Location"
-// @Success 200 {object} gin.H
+// @Success 200 {object} []model.Office
 // @Failure 400 {object} gin.H
 // @Failure 500 {object} gin.H
 // @Router /api/v1/office/location/{location} [get]
@@ -204,7 +204,7 @@ func (r *Router) GetOfficesByLocation(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"offices": offices})
+	c.JSON(http.StatusOK, offices)
 }
 
 // @Summary Get offices by company id
@@ -213,7 +213,7 @@ func (r *Router) GetOfficesByLocation(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Company ID"
-// @Success 200 {object} gin.H
+// @Success 200 {object} []model.Office
 // @Failure 400 {object} gin.H
 // @Failure 500 {object} gin.H
 // @Router /api/v1/office/company/{id} [get]
@@ -235,5 +235,5 @@ func (r *Router) GetOfficesByCompanyID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"offices": offices})
+	c.JSON(http.StatusOK, offices)
 }
