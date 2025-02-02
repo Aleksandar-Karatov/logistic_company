@@ -4,7 +4,7 @@ import { getAuthHeaders, getApiUrl } from './utils';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('jwtToken')); // Initialize from localStorage
+    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('jwtToken')); 
     const [userRole, setUserRole] = useState(localStorage.getItem('userRole'));
     const [userEmail, setUserEmail] = useState(localStorage.getItem('userEmail'));
     const apiUrl = getApiUrl();
@@ -15,8 +15,8 @@ export const AuthProvider = ({ children }) => {
 
             if (token) {
                 try {
-                    const response = await fetch(`${apiUrl}/api/v1/user-info`, { // Use your protected endpoint
-                        headers: getAuthHeaders(), // Send token in header
+                    const response = await fetch(`${apiUrl}/api/v1/user-info`, { 
+                        headers: getAuthHeaders(), 
                     });
 
                     if (response.ok) {
@@ -45,11 +45,11 @@ export const AuthProvider = ({ children }) => {
         };
 
         checkAuthStatus();
-    }, [apiUrl]); // Run only once on mount
+    }, [apiUrl]); 
 
     const login = (userData) => {
-        localStorage.setItem('jwtToken', userData.token); // Store the token
-        localStorage.setItem('userRole', userData.role); // Store the role
+        localStorage.setItem('jwtToken', userData.token); 
+        localStorage.setItem('userRole', userData.role); 
         localStorage.setItem('userEmail', userData.email);
         setIsLoggedIn(true);
         setUserRole(userData.role);

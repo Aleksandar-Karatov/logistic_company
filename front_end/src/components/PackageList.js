@@ -27,10 +27,10 @@ function PackageList({ packages: initialPackages }) {
                 receiverID: pkg.receiver_id,
                 receiver: pkg.receiver,
                 weight: pkg.weight,
-                price: pkg.price, // Price is here
+                price: pkg.price, 
                 isDeliveredToOffice: pkg.is_delivered_to_office,
                 deliveryStatus: pkg.delivery_status,
-                deliveryDate: pkg.delivery_date, // Delivery date is here
+                deliveryDate: pkg.delivery_date, 
                 registeredByID: pkg.registered_by,
                 registeredBy: pkg.registered_by_navigation,
                 courrierID: pkg.courrier_id,
@@ -84,9 +84,9 @@ function PackageList({ packages: initialPackages }) {
                         <th>Sender</th>
                         <th>Receiver</th>
                         <th>Weight</th>
-                        <th>Price</th> {/* Price column is here */}
+                        <th>Price</th> {}
                         <th>Delivery Status</th>
-                        <th>Delivery Date</th> {/* Delivery Date column is here */}
+                        <th>Delivery Date</th> {}
                         <th>Delivery Location</th>
                         <th>Courier</th>
                         <th>Office Accepted At</th>
@@ -101,9 +101,9 @@ function PackageList({ packages: initialPackages }) {
                             <td>{pkg.sender?.name}</td>
                             <td>{pkg.receiver?.name}</td>
                             <td>{pkg.weight}</td>
-                            <td>{pkg.price}</td> {/* Price cell is here */}
+                            <td>{pkg.price}</td> {}
                             <td>{pkg.deliveryStatus}</td>
-                            <td>{pkg.deliveryDate}</td> {/* Delivery Date cell is here */}
+                            <td>{pkg.deliveryDate}</td> {}
                             <td>{pkg.deliveryLocation}</td>
                             <td>{pkg.courrier?.name}</td>
                             <td>{pkg.officeAcceptedAt?.location}</td>

@@ -7,8 +7,6 @@ definitions:
     properties:
       email:
         type: string
-      favoriteOfficeID:
-        type: string
       id:
         type: string
       name:
@@ -23,8 +21,6 @@ definitions:
   model.ClientRegister:
     properties:
       email:
-        type: string
-      favoriteOfficeID:
         type: string
       id:
         type: string
@@ -1134,7 +1130,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/gin.H'
+            items:
+              $ref: '#/definitions/model.Office'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -1165,7 +1163,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/gin.H'
+            items:
+              $ref: '#/definitions/model.Office'
+            type: array
         "400":
           description: Bad Request
           schema:

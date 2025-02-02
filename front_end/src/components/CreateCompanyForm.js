@@ -37,7 +37,7 @@ function CreateCompanyForm() {
                 throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
             }
 
-            navigate('/companies'); // Redirect on success
+            navigate('/companies');
         } catch (err) {
             setError(err.message);
         } finally {

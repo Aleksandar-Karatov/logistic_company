@@ -6,7 +6,7 @@ function ClientList({ clients: initialClients }) {
     const [clients, setClients] = useState(initialClients || []);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [refreshTrigger, setRefreshTrigger] = useState(0); // For refresh button
+    const [refreshTrigger, setRefreshTrigger] = useState(0); 
 
     const apiUrl = getApiUrl();
 
@@ -31,7 +31,7 @@ function ClientList({ clients: initialClients }) {
 
     useEffect(() => {
         fetchClients();
-    }, [fetchClients, refreshTrigger]); // refreshTrigger is a dependency
+    }, [fetchClients, refreshTrigger]); 
 
     const handleRefreshClick = () => {
         setRefreshTrigger(prev => prev + 1);
@@ -59,7 +59,7 @@ function ClientList({ clients: initialClients }) {
                         <th>Name</th>
                         <th>Email</th>
                         <th>Phone</th>
-                        {/* ... other columns */}
+                        {}
                     </tr>
                 </thead>
                 <tbody>
@@ -69,7 +69,7 @@ function ClientList({ clients: initialClients }) {
                             <td>{client.name}</td>
                             <td>{client.email}</td>
                             <td>{client.phone}</td>
-                            {/* ... other cells */}
+                            {}
                         </tr>
                     ))}
                 </tbody>

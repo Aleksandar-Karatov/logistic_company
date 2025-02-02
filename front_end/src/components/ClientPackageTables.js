@@ -13,7 +13,7 @@ function ClientPackageTables({ userRole, userId }) {
             try {
                 const sentResponse = await fetch(`${apiUrl}/api/v1/package/sender/${userId}`, { headers: getAuthHeaders() });
                 if (!sentResponse.ok) {
-                    const errorData = await sentResponse.json(); // Try to parse error message from backend
+                    const errorData = await sentResponse.json(); 
                     throw new Error(errorData.message || `HTTP error! status: ${sentResponse.status}`);
                 }
                 const sentData = await sentResponse.json();
@@ -21,7 +21,7 @@ function ClientPackageTables({ userRole, userId }) {
 
                 const receivedResponse = await fetch(`${apiUrl}/api/v1/package/receiver/${userId}`, { headers: getAuthHeaders() });
                 if (!receivedResponse.ok) {
-                    const errorData = await receivedResponse.json(); // Try to parse error message from backend
+                    const errorData = await receivedResponse.json();
                     throw new Error(errorData.message || `HTTP error! status: ${receivedResponse.status}`);
                 }
                 const receivedData = await receivedResponse.json();
@@ -35,7 +35,7 @@ function ClientPackageTables({ userRole, userId }) {
         };
 
         fetchPackages();
-    }, [userId, apiUrl]); // Fetch when userId changes
+    }, [userId, apiUrl]); 
 
     if (loading) {
         return <div className="d-flex justify-content-center"><Spinner animation="border" /></div>;
@@ -57,7 +57,7 @@ function ClientPackageTables({ userRole, userId }) {
                             <th>Sender</th>
                             <th>Receiver</th>
                             <th>Delivery Address</th>
-                            {/* Add other relevant columns */}
+                            {}
                         </tr>
                     </thead>
                     <tbody>
@@ -65,10 +65,10 @@ function ClientPackageTables({ userRole, userId }) {
                             <tr key={pkg.id}>
                                 <td>{pkg.id}</td>
                                 <td>{pkg.weight}</td>
-                                <td>{pkg.sender?.name} {/* Access nested sender name */}</td>
-                                <td>{pkg.receiver?.name} {/* Access nested receiver name */}</td>
+                                <td>{pkg.sender?.name} {}</td>
+                                <td>{pkg.receiver?.name} {}</td>
                                 <td>{pkg.deliveryAddress}</td>
-                                {/* Add other table cells */}
+                                {}
                             </tr>
                         ))}
                     </tbody>
@@ -87,7 +87,7 @@ function ClientPackageTables({ userRole, userId }) {
                             <th>Sender</th>
                             <th>Receiver</th>
                             <th>Delivery Address</th>
-                            {/* Add other relevant columns */}
+                            {}
                         </tr>
                     </thead>
                     <tbody>
@@ -95,10 +95,10 @@ function ClientPackageTables({ userRole, userId }) {
                             <tr key={pkg.id}>
                                 <td>{pkg.id}</td>
                                 <td>{pkg.weight}</td>
-                                <td>{pkg.sender?.name} {/* Access nested sender name */}</td>
-                                <td>{pkg.receiver?.name} {/* Access nested receiver name */}</td>
+                                <td>{pkg.sender?.name} {}</td>
+                                <td>{pkg.receiver?.name} {}</td>
                                 <td>{pkg.deliveryAddress}</td>
-                                {/* Add other table cells */}
+                                {}
                             </tr>
                         ))}
                     </tbody>

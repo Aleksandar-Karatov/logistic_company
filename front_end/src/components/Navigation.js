@@ -1,15 +1,15 @@
 import React, { useContext } from 'react';
 import { Container, Nav, Navbar } from 'react-bootstrap';
-import { Link, NavLink, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { Link, NavLink, useNavigate } from 'react-router-dom'; 
 import AuthContext from './authContext';
-import { handleLogout, getApiUrl } from './utils'; // Import handleLogout and getApiUrl
+import { handleLogout, getApiUrl } from './utils'; 
 
 function Navigation() {
     const { isLoggedIn, userRole, setIsLoggedIn } = useContext(AuthContext);
-    const navigate = useNavigate(); // Initialize useNavigate
+    const navigate = useNavigate(); 
     const apiUrl = getApiUrl();
 
-    const handleLogoutNav = async () => {  // Define handleLogoutNav
+    const handleLogoutNav = async () => {  
         try {
             await handleLogout(apiUrl);
             setIsLoggedIn(false);
@@ -62,7 +62,7 @@ function Navigation() {
                             <Nav.Link as={NavLink} to="/client-packages">Client Packages</Nav.Link>
                         )}
 
-                        {isLoggedIn ? ( // Use isLoggedIn here
+                        {isLoggedIn ? ( 
                             <Nav.Link onClick={handleLogoutNav}>Logout</Nav.Link>
                         ) : (
                             <Nav.Link as={NavLink} to="/login">Login</Nav.Link>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { getApiUrl, getAuthHeaders } from './utils';
 
-function CreateClientForm() { // Removed companies and offices props
+function CreateClientForm() { 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');

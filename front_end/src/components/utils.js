@@ -4,7 +4,6 @@ export const handleLogout = async (apiUrl) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                //'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`, // If sending token in header
             },
         });
 
@@ -16,14 +15,14 @@ export const handleLogout = async (apiUrl) => {
         localStorage.removeItem('jwtToken');
     } catch (error) {
         console.error("Logout error:", error);
-        throw error; // Re-throw for component handling
+        throw error; 
     }
 };
 export const getAuthHeaders = () => {
-    const token = localStorage.getItem('jwtToken'); // Get token from localStorage
+    const token = localStorage.getItem('jwtToken'); 
     if (token) {
         return {
-            'Authorization': `${token}`, // Send token in header
+            'Authorization': `${token}`, 
             'Content-Type': 'application/json'
         };
     } else {
