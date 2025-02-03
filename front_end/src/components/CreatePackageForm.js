@@ -21,17 +21,18 @@ function CreatePackageForm({ employees, clients, offices, companies }) {
 
     const handleIsDeliveredToOfficeChange = (e) => {
         setIsDeliveredToOffice(e.target.checked);
-        if (e.target.checked) {
-            setDestinationOffice(offices && offices.find(office => office.id === officeDeliveredAtID));
-        } else {
-            setDestinationOffice(null);
-        }
+        setDeliveryLocation(''); 
+        setDestinationOffice(null);
     };
 
     const handleOfficeDeliveredAtChange = (e) => {
+        const selectedOffice = offices && offices.find(office => office.id === e.target.value);
         setOfficeDeliveredAtID(e.target.value);
-        if (isDeliveredToOffice) {
-            setDestinationOffice(offices && offices.find(office => office.id === e.target.value));
+        setDestinationOffice(selectedOffice);
+
+
+        if (isDeliveredToOffice && selectedOffice) {
+            setDeliveryLocation(selectedOffice.location); 
         }
     };
 
@@ -58,7 +59,7 @@ function CreatePackageForm({ employees, clients, offices, companies }) {
                     registeredByID: registeredByID,
                     courrierID: courrierID,
                     officeAcceptedAtID: officeAcceptedAtID,
-                    deliveryLocation: deliveryLocation,
+                    deliveryLocation: isDeliveredToOffice ? destinationOffice?.location : deliveryLocation,
                     officeDeliveredAtID: officeDeliveredAtID,
                     companyID: companyID,
                 }),
@@ -81,12 +82,12 @@ function CreatePackageForm({ employees, clients, offices, companies }) {
             setDeliveryLocation('');
             setOfficeDeliveredAtID('');
             setCompanyID('');
+            setDestinationOffice(null);
         } catch (error) {
             console.error("Error creating package:", error);
             setError(error.message);
         }
     };
-
     return (
         <Form onSubmit={handleSubmit}>
             {error && <Alert variant="danger">{error}</Alert>}
@@ -198,13 +199,12 @@ function CreatePackageForm({ employees, clients, offices, companies }) {
                 <Form.Control
                     type="text"
                     placeholder="Enter delivery location"
-                    value={isDeliveredToOffice && destinationOffice ? destinationOffice.location : deliveryLocation}
+                    value={deliveryLocation}
                     onChange={(e) => setDeliveryLocation(e.target.value)}
                     required={!isDeliveredToOffice}
                     disabled={isDeliveredToOffice}
                 />
             </Form.Group>
-    
     
             <Form.Group controlId="companyID">
                 <Form.Label>Company</Form.Label>
@@ -223,7 +223,6 @@ function CreatePackageForm({ employees, clients, offices, companies }) {
             </Button>
         </Form>
     );
-    
 }
 
 export default CreatePackageForm;
