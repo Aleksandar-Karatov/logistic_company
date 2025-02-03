@@ -59,7 +59,7 @@ function Navigation() {
                         )}
 
                         {userRole === 'client' && (
-                            <Nav.Link as={NavLink} to="/client-packages">Client Packages</Nav.Link>
+                            <Nav.Link as={NavLink} to="/packages">Client Packages</Nav.Link>
                         )}
 
                         {isLoggedIn ? ( 
