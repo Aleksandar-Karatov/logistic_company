@@ -63,6 +63,7 @@ function CompanyList({ userRole }) {
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
+                            <th>Revenue</th>
                             {}
                         </tr>
                     </thead>
@@ -75,6 +76,7 @@ function CompanyList({ userRole }) {
                             >
                                 <td>{company.id}</td>
                                 <td>{company.name}</td>
+                                <td>{company.revenue}</td>
                                 {}
                             </tr>
                         ))}

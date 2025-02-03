@@ -50,16 +50,17 @@ func (p *Package) BeforeUpdate(tx *gorm.DB) (err error) {
 	if p.DeliveryStatus == config.StatusDelivired {
 		t := time.Now()
 		p.DeliveryDate = &t
-	}
-	company := Company{}
-	err = tx.Model(&Company{}).Joins("LEFT JOIN package ON package.company_id = company.id").Where("package.id = ?", p.ID).
-		Find(&company).Error
-	if err != nil {
-		return
-	}
-	company.Revenue += p.Price
+		company := Company{}
+		err = tx.Model(&Company{}).
+			Joins("LEFT JOIN package ON package.company_id = company.id").Where("package.id = ?", p.ID).
+			First(&company).Error
+		if err != nil {
+			return
+		}
+		company.Revenue += p.Price
 
-	err = tx.Model(&Company{}).Where("id = ?", company.ID).Update("revenue", company.Revenue).Error
+		err = tx.Model(&Company{}).Where("id = ?", company.ID).Update("revenue", company.Revenue).Error
+	}
 
 	return
 }
