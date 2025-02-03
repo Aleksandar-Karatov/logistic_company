@@ -39,13 +39,13 @@ function CourierPackageList({ userId }) {
             }
         };
 
-        if (userId && apiUrl) { // Check if userId and apiUrl exist
+        if (userId && apiUrl) { 
             fetchPackages();
         } else {
-            setLoading(false); // Set loading to false if userId or apiUrl is missing
+            setLoading(false);
         }
 
-    }, [userId, apiUrl]); // userId and apiUrl are dependencies
+    }, [userId, apiUrl]); 
 
 
     if (loading) {

@@ -136,7 +136,7 @@ function App() {
                             </PrivateRoute>
                         } />
 
-                        {/* Admin Routes */}
+                        {}
                         {userRole === 'admin' && (
                             <>
                                 <Route path="/companies" element={<PrivateRoute><CompanyList companies={companies} userRole={userRole} /></PrivateRoute>} />
@@ -151,7 +151,7 @@ function App() {
                             </>
                         )}
 
-                        {/* Employee Routes */}
+                        {}
                         {userRole === 'employee' && (
                             <>
                                 <Route path="/employees" element={<PrivateRoute><EmployeeList userRole={userRole} /></PrivateRoute>} />
