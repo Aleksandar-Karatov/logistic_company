@@ -1215,37 +1215,6 @@ paths:
       summary: Get all packages
       tags:
       - Package
-    patch:
-      consumes:
-      - application/json
-      description: Update package
-      parameters:
-      - description: Package
-        in: body
-        name: package
-        required: true
-        schema:
-          $ref: '#/definitions/model.Package'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Package'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/gin.H'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/gin.H'
-      security:
-      - BearerAuth: []
-      summary: Update package
-      tags:
-      - Package
     post:
       consumes:
       - application/json
@@ -1336,6 +1305,37 @@ paths:
       security:
       - BearerAuth: []
       summary: Get package by id
+      tags:
+      - Package
+    patch:
+      consumes:
+      - application/json
+      description: Update package
+      parameters:
+      - description: Package
+        in: body
+        name: package
+        required: true
+        schema:
+          $ref: '#/definitions/model.Package'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Package'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - BearerAuth: []
+      summary: Update package
       tags:
       - Package
   /api/v1/package/employee/{id}:

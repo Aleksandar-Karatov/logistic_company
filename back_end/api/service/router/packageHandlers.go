@@ -262,11 +262,12 @@ func (r *Router) CreatePackage(c *gin.Context) {
 // @Tags Package
 // @Accept json
 // @Produce json
+// @Param id path string true "Package ID"
 // @Param package body model.Package true "Package"
 // @Success 200 {object} model.Package
 // @Failure 400 {object} gin.H
 // @Failure 500 {object} gin.H
-// @Router /api/v1/package [patch]
+// @Router /api/v1/package/{id} [patch]
 // @Security BearerAuth
 func (r *Router) UpdatePackage(c *gin.Context) {
 	var packageModel model.Package
@@ -288,7 +289,7 @@ func (r *Router) UpdatePackage(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
-
+	packageModel.ID = c.Param(config.Id)
 	err = r.repository.PackageRepository.UpdatePackage(c.Request.Context(), &packageModel)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

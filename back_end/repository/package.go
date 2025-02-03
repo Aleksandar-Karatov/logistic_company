@@ -20,15 +20,15 @@ func NewPackageRepository(db *gorm.DB) *PackageRepository {
 }
 
 func (r *PackageRepository) GetAllPackages(ctx context.Context, packages *[]model.Package, limit, offset int) error {
-	return r.db.WithContext(ctx).Preload(clause.Associations).Offset(offset).Limit(limit).Find(packages).Error
+	return r.db.WithContext(ctx).Preload(clause.Associations).Offset(offset).Limit(limit).Find(&packages).Error
 }
 
 func (r *PackageRepository) GetPackagesByCompanyID(ctx context.Context, packages *[]model.Package, id string, limit, offset int) error {
-	return r.db.WithContext(ctx).Preload(clause.Associations).Where("company_id = ?", id).Offset(offset).Limit(limit).Find(packages).Error
+	return r.db.WithContext(ctx).Preload(clause.Associations).Where("company_id = ?", id).Offset(offset).Limit(limit).Find(&packages).Error
 }
 
 func (r *PackageRepository) GetPackagesBySenderID(ctx context.Context, packages *[]model.Package, id string, limit, offset int) error {
-	return r.db.WithContext(ctx).Preload(clause.Associations).Where("sender_id = ?", id).Offset(offset).Limit(limit).Find(packages).Error
+	return r.db.WithContext(ctx).Preload(clause.Associations).Where("sender_id = ?", id).Offset(offset).Limit(limit).Find(&packages).Error
 }
 
 func (r *PackageRepository) GetPackagesByReceiverID(ctx context.Context, packages *[]model.Package, id string, limit, offset int) error {
@@ -64,7 +64,7 @@ func (r *PackageRepository) CreatePackage(ctx context.Context, packageModel *mod
 }
 
 func (r *PackageRepository) UpdatePackage(ctx context.Context, packageModel *model.Package) error {
-	return r.db.WithContext(ctx).Preload(clause.Associations).Model(&packageModel).Updates(packageModel).Error
+	return r.db.WithContext(ctx).Preload(clause.Associations).Model(&packageModel).Where("id = ?", packageModel.ID).Updates(packageModel).Error
 }
 
 func (r *PackageRepository) DeletePackage(ctx context.Context, packageModel *model.Package, id string) error {

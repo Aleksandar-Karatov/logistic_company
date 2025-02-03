@@ -51,7 +51,7 @@ func (c *CompanyRepository) CreateCompany(ctx context.Context, company *model.Co
 }
 
 func (c *CompanyRepository) UpdateCompany(ctx context.Context, company *model.Company) error {
-	return c.db.WithContext(ctx).Model(&company).Save(company).Error
+	return c.db.WithContext(ctx).Model(&company).Where("id = ?", company.ID).Save(company).Error
 }
 
 func (c *CompanyRepository) DeleteCompany(ctx context.Context, id string) error {

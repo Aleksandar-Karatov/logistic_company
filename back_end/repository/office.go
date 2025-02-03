@@ -32,7 +32,7 @@ func (o *OfficeRepository) CreateOffice(ctx context.Context, office *model.Offic
 }
 
 func (o *OfficeRepository) UpdateOffice(ctx context.Context, office *model.Office) error {
-	return o.db.WithContext(ctx).Preload(clause.Associations).Model(&office).Updates(office).Error
+	return o.db.WithContext(ctx).Preload(clause.Associations).Model(&office).Where("id = ?", office.ID).Updates(office).Error
 }
 
 func (o *OfficeRepository) DeleteOffice(ctx context.Context, id string) error {
@@ -76,7 +76,7 @@ func (o *OfficeRepository) reassignEmployees(tx *gorm.DB, id string) error {
 	}
 
 	for i := 0; i < len(employees); i++ {
-		if err := tx.Model(&model.Employee{}).Update("office_id", offices[i%len(employees)].ID).Error; err != nil {
+		if err := tx.Model(&model.Employee{}).Where("id = ?", employees[i].ID).Update("office_id", offices[i%len(employees)].ID).Error; err != nil {
 			return err
 		}
 	}

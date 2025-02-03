@@ -3,6 +3,8 @@ package model
 import (
 	"time"
 
+	"logistic_company/config"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -17,7 +19,7 @@ type Package struct {
 	Price               float64    `gorm:"column:price;not null;type:float(8)" json:"price"`
 	IsDeliveredToOffice bool       `gorm:"column:is_delivered_to_office;not null;type:bool" json:"isDeliveredToOffice" binding:"required"`
 	DeliveryStatus      string     `gorm:"column:delivery_status;not null;type:varchar(255)" json:"deliveryStatus"`
-	DeliveryDate        *time.Time `gorm:"column:delivery_date;type:datetime" json:"deliveryDate"`
+	DeliveryDate        *time.Time `gorm:"column:delivery_date;type:DATETIME" json:"deliveryDate"`
 
 	RegisteredByID string    `gorm:"column:registered_by;type:varchar(255)" json:"registeredByID" binding:"required"`
 	RegisteredBy   *Employee `gorm:"foreignKey:RegisteredByID" json:"registeredBy"`
@@ -42,4 +44,22 @@ func (Package) TableName() string {
 func (p *Package) BeforeCreate(tx *gorm.DB) (err error) {
 	p.ID = uuid.New().String()
 	return nil
+}
+
+func (p *Package) BeforeUpdate(tx *gorm.DB) (err error) {
+	if p.DeliveryStatus == config.StatusDelivired {
+		t := time.Now()
+		p.DeliveryDate = &t
+	}
+	company := Company{}
+	err = tx.Model(&Company{}).Joins("LEFT JOIN package ON package.company_id = company.id").Where("package.id = ?", p.ID).
+		Find(&company).Error
+	if err != nil {
+		return
+	}
+	company.Revenue += p.Price
+
+	err = tx.Model(&Company{}).Where("id = ?", company.ID).Update("revenue", company.Revenue).Error
+
+	return
 }

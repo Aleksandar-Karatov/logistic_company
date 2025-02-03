@@ -11,4 +11,6 @@ const (
 
 	DeliveryToOfficePricePerKillogram  = 4.99
 	DeliveryToAddressPricePerKillogram = 9.99
+
+	StatusDelivired = "Delivered"
 )

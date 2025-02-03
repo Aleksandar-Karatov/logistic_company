@@ -38,7 +38,7 @@ func (c *ClientRepository) CreateClient(ctx context.Context, client *model.Clien
 }
 
 func (c *ClientRepository) UpdateClient(ctx context.Context, client *model.ClientRegister) error {
-	return c.db.WithContext(ctx).Model(&client).Updates(&client).Error
+	return c.db.WithContext(ctx).Model(&client).Where("id = ?", client.ID).Updates(&client).Error
 }
 
 func (c *ClientRepository) DeleteClient(ctx context.Context, id string) error {

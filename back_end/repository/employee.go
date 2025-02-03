@@ -41,7 +41,7 @@ func (e *EmployeeRepository) CreateEmployee(ctx context.Context, employee *model
 }
 
 func (e *EmployeeRepository) UpdateEmployee(ctx context.Context, employee *model.EmployeeRegister) error {
-	return e.db.WithContext(ctx).Preload(clause.Associations).Model(&employee).Updates(employee).Error
+	return e.db.WithContext(ctx).Preload(clause.Associations).Model(&employee).Where("id = ?", employee.ID).Updates(employee).Error
 }
 
 func (e *EmployeeRepository) DeleteEmployee(ctx context.Context, id string) error {

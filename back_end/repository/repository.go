@@ -23,7 +23,7 @@ type Repository struct {
 }
 
 func NewRepository(cfg config.Config) (*Repository, error) {
-	dsn := cfg.DBUser + ":" + cfg.DBPassword + "@tcp(" + cfg.DBHost + ":" + cfg.DBPort + ")/" + cfg.DBName
+	dsn := cfg.DBUser + ":" + cfg.DBPassword + "@tcp(" + cfg.DBHost + ":" + cfg.DBPort + ")/" + cfg.DBName + "?parseTime=true"
 	l := gormlogruslogger.NewGormLogrusLogger(log.WithField("component", "gorm"), 100*time.Millisecond)
 	l.LogMode(logger.Info)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: l})
