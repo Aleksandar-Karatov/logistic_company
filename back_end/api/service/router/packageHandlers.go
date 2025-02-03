@@ -134,7 +134,7 @@ func (r *Router) GetPackagesByEmployeeID(c *gin.Context) {
 	contextID, _ := c.Get(config.Id)
 	role, _ := c.Get(config.Role)
 	id := c.Param(config.Id)
-	if role != config.RoleAdmin && role != config.RoleEmployee && contextID != id {
+	if role != config.RoleAdmin && role != config.RoleEmployee && role != config.RoleCourrier && contextID != id {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Unauthorized"})
 		return
 	}

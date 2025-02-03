@@ -19,6 +19,7 @@ import CreateCompanyForm from './components/CreateCompanyForm';
 import CreateOfficeForm from './components/CreateOfficeForm';
 import PrivateRoute from './components/PrivateRoute';
 import EmployeeListByCompany from './components/EmployeeListByCompany';
+import CourierPackageList from './components/CourierPackageList';
 
 function App() {
     const [companies, setCompanies] = useState([]);
@@ -63,7 +64,7 @@ function App() {
 
                 const fetchCalls = [];
 
-                if (userRole === 'employee' || userRole === 'admin') {
+                if (userRole === 'employee' || userRole === 'admin' || userRole === 'courrier') {
                     fetchCalls.push(fetch(`${apiUrl}/api/v1/company`, { headers: getAuthHeaders() }).then(res => res.json()));
                     fetchCalls.push(fetch(`${apiUrl}/api/v1/client`, { headers: getAuthHeaders() }).then(res => res.json()));
                     fetchCalls.push(fetch(`${apiUrl}/api/v1/office`, { headers: getAuthHeaders() }).then(res => res.json()));
@@ -115,6 +116,8 @@ function App() {
                                     <PackageList userRole={userRole} />
                                 ) : userRole === 'client' ? (
                                     <ClientPackageTables userRole={userRole} userId={userId} />
+                                ) : userRole === 'courrier'?(
+                                    <CourierPackageList userRole={userRole} userId ={userId}/>
                                 ) : null}
                             </PrivateRoute>
                         } />
@@ -127,6 +130,8 @@ function App() {
                                     <PackageList userRole={userRole} />
                                 ) : userRole === 'client' ? (
                                     <ClientPackageTables userRole={userRole} userId={userId} />
+                                ) : userRole === 'courrier'?(
+                                    <CourierPackageList userRole={userRole} userId ={userId}/>
                                 ) : null}
                             </PrivateRoute>
                         } />
