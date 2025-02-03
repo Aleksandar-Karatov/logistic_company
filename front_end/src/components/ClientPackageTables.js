@@ -76,6 +76,7 @@ function ClientPackageTables({ userRole, userId }) {
                             <th>Sender</th>
                             <th>Receiver</th>
                             <th>Delivery Address</th>
+                            <th>Price</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -86,6 +87,7 @@ function ClientPackageTables({ userRole, userId }) {
                                 <td>{pkg.sender?.name}</td>
                                 <td>{pkg.receiver?.name}</td>
                                 <td>{pkg.deliveryLocation}</td>
+                                <td>{pkg.price}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -104,6 +106,7 @@ function ClientPackageTables({ userRole, userId }) {
                             <th>Sender</th>
                             <th>Receiver</th>
                             <th>Delivery Address</th>
+                            <th>Price</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -114,6 +117,7 @@ function ClientPackageTables({ userRole, userId }) {
                                 <td>{pkg.sender?.name}</td>
                                 <td>{pkg.receiver?.name}</td>
                                 <td>{pkg.deliveryLocation}</td>
+                                <td>{pkg.price}</td>
                             </tr>
                         ))}
                     </tbody>
